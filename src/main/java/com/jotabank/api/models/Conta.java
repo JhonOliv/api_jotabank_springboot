@@ -3,6 +3,8 @@ package com.jotabank.api.models;
 import java.util.ArrayList;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.jotabank.api.exception.ValidacaoInsercaoExtrato;
+import com.jotabank.api.exception.VerificarDadosConta;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -13,6 +15,16 @@ import jakarta.persistence.MappedSuperclass;
 @MappedSuperclass
 public abstract class Conta {
 	
+	public Conta(Pessoa pessoa, double saldo, String password) throws VerificarDadosConta {
+		if(!pessoa.equals(null) && saldo >= 0) {
+			setTitular(pessoa);
+			setSaldoConta(saldo);
+			setPassword(password);
+		}else {
+			throw new VerificarDadosConta("Erro ao criar conta, verifique se os dados estão corretos!");
+		}
+	}
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long idConta;
@@ -22,7 +34,7 @@ public abstract class Conta {
 	private String password;
 	@Autowired
 	@ManyToOne
-	private Cliente titular;
+	private Pessoa titular;
 	@Column(length = 50, nullable = false)	
 	private double saldoConta;
 	@Column(length = 50, nullable = false)	
@@ -45,6 +57,15 @@ public abstract class Conta {
 	public void setPassword(String pass) {
 		this.password = pass;
 	}
+	
+	public Pessoa getTitular() {
+		return this.titular;
+	}
+	
+	public void setTitular(Pessoa titular) {
+		this.titular = titular;
+	}
+	
 	public double getSaldoConta() {
 		return this.saldoConta;
 	}
