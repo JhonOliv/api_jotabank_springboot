@@ -6,13 +6,15 @@ import com.jotabank.api.exception.ValidacaoInsercaoExtrato;
 import com.jotabank.api.exception.VerificarDadosConta;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.Table;
 
-@MappedSuperclass
+@Entity
+@Table(name = "tab_conta")
 public abstract class Conta {
 	
 	public Conta(Pessoa pessoa, double saldo, String password) throws VerificarDadosConta {
