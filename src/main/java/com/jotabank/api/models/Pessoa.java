@@ -15,7 +15,7 @@ public class Pessoa {
 	
 	public Pessoa(String nome, String cpf, String telefone, String endereco) throws ValidacaoDadosPessoa {
 		
-		if(nome  != null || cpf != null  || telefone != null  || endereco != null ) {
+		if(!nome.equals("") || !cpf.equals("")) {
 			setNome(nome);
 			setCpf(cpf);
 			setTelefone(telefone);
@@ -23,6 +23,10 @@ public class Pessoa {
 		}else {
 			throw new ValidacaoDadosPessoa("Erro ao inserir os dados, verifique se não há nenhum campo vazio");
 		}
+		
+	}
+	
+	public Pessoa() {
 		
 	}
 	
@@ -68,8 +72,5 @@ public class Pessoa {
 		this.endereco = endereco;
 	}
 	
-	public String toString() {
-		return "Nome Titular: " + getNome() + "\n" + "CPF: " + getCpf();
-	}
 
 }
