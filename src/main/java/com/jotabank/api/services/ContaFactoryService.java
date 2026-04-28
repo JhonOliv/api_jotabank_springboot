@@ -5,42 +5,43 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.jotabank.api.dtos.ContaDtosRequest;
 import com.jotabank.api.exception.ValidacaoDadosPessoa;
 import com.jotabank.api.exception.VerificarDadosConta;
 import com.jotabank.api.models.Cliente;
 import com.jotabank.api.models.Conta;
+import com.jotabank.api.models.ContaCorrente;
 import com.jotabank.api.repositories.ContaRepository;
 import com.jotabank.api.repositories.PessoaRepository;
 
 @Service
 public class ContaFactoryService implements ContaService{
 	@Autowired
-	private ContaRepository conta;
+	private ContaRepository repositoryConta;
 	@Autowired
-	private PessoaRepository cliente;
+	private PessoaRepository repositoryCliente;
 	
 	public String testHelloWorld(String nome) {
 		return "Hello World my dev " + nome;
 	}
 
 	@Override
-	public void criarContaCorrente(Conta novaConta, Cliente titular) throws ValidacaoDadosPessoa, VerificarDadosConta{
+	public ContaDtosRequest criarContaCorrente(ContaDtosRequest request) throws ValidacaoDadosPessoa, VerificarDadosConta{
 		
-		if(titular.getCpf().equals("")) {
-			throw new ValidacaoDadosPessoa("Cpf inválido verifique o campo!");
-		}else if(novaConta.getSaldoConta() <= 0) {
-			throw new VerificarDadosConta("Seu saldo é igual ou menor que zero, verifique o campo");
-		}else {	
-			conta.save(novaConta);
-			cliente.save(titular);
-		}
+		Cliente titular = new Cliente(request.getNomeCompleto(), request.getCpf(),
+				request.getTelefone(), request.getEndereco(), request.getSalario());
+		Cliente clienteSalvo = repositoryCliente.save(titular);
+
+		Conta novaConta = new ContaCorrente(clienteSalvo, request.getSaldo(), request.getPassword());	
+		Conta contaCriada = repositoryConta.save(novaConta);
 		
+		return new ContaDtosRequest(clienteSalvo.getNome(), contaCriada.getSaldoConta());
 		
 	}
 	
 	@Override
-	public Conta getContaPorId( Long idConta) {
-		return this.conta.getById(idConta);
+	public void getContaPorId( Long idConta) {
+		
 		
 	}
 

@@ -6,18 +6,16 @@ import com.jotabank.api.exception.ValidacaoInsercaoExtrato;
 import com.jotabank.api.exception.VerificarDadosConta;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.MappedSuperclass;
 
-@Entity
-@Table(name = "tab_conta")
+@MappedSuperclass
 public abstract class Conta {
 	
-	public Conta(Pessoa pessoa, double saldo, String password) throws VerificarDadosConta {
+	public Conta(Cliente pessoa, Double saldo, String password) throws VerificarDadosConta {
 		if(!pessoa.equals(null) && saldo >= 0) {
 			setTitular(pessoa);
 			setSaldoConta(saldo);
@@ -36,12 +34,12 @@ public abstract class Conta {
 	private String password;
 	@Autowired
 	@ManyToOne
-	private Pessoa titular;
+	private Cliente titular;
 	@Column(length = 50, nullable = false)	
-	private double saldoConta;
-	@Column(length = 50, nullable = false)	
+	private Double saldoConta;
+	@Column(length = 50, nullable = true)	
 	private ArrayList<ExtratoMovimentacao> extratoConta;
-	@Column(length = 50, nullable = false)	
+	@Column(length = 50, nullable = true)	
 	private ArrayList<Transferencia> minhasTransferencias;
 	
 	public Long getIdConta() {
@@ -60,11 +58,11 @@ public abstract class Conta {
 		this.password = pass;
 	}
 	
-	public Pessoa getTitular() {
+	public Cliente getTitular() {
 		return this.titular;
 	}
 	
-	public void setTitular(Pessoa titular) {
+	public void setTitular(Cliente titular) {
 		this.titular = titular;
 	}
 	
@@ -72,7 +70,7 @@ public abstract class Conta {
 		return this.saldoConta;
 	}
 	
-	public void setSaldoConta(double saldo) {
+	public void setSaldoConta(Double saldo) {
 		this.saldoConta = saldo;
 	}
 	

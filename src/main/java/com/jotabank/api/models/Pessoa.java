@@ -3,14 +3,12 @@ package com.jotabank.api.models;
 import com.jotabank.api.exception.ValidacaoDadosPessoa;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.MappedSuperclass;
 
-@Entity
-@Table(name = "tab_pessoa")
+@MappedSuperclass 
 public class Pessoa {
 	
 	public Pessoa(String nome, String cpf, String telefone, String endereco) throws ValidacaoDadosPessoa {
@@ -26,12 +24,8 @@ public class Pessoa {
 		
 	}
 	
-	public Pessoa() {
-		
-	}
-	
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long idPessoa;
 	@Column(length = 50, nullable = false)
 	private String nome;

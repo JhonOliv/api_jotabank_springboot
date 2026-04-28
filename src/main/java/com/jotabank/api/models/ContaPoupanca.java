@@ -8,10 +8,9 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name="tab_contaPoupanca")
-@MappedSuperclass
 public class ContaPoupanca extends Conta{
 	
-	public ContaPoupanca(Pessoa pessoa, double saldo, String password) throws VerificarDadosConta {
+	public ContaPoupanca(Cliente pessoa, double saldo, String password) throws VerificarDadosConta {
 		super(pessoa, saldo, password);
 		// TODO Auto-generated constructor stub
 	}

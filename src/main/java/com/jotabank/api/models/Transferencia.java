@@ -9,8 +9,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -21,8 +19,6 @@ public class Transferencia {
 	public Transferencia(double valorTransferencia, Pessoa origem, Pessoa destino, TipoTransacao tipo) throws ValidacaoInsercaoTransferencia {
 		// TODO Auto-generated constructor stub
 		setValorTransacao(valorTransferencia);
-		setOrigem(origem);
-		setDestino(destino);
 		setTipoTrasacao(tipo);
 
 	}
@@ -34,12 +30,7 @@ public class Transferencia {
 	private final String dataTransacao = String.valueOf(LocalDate.now());
 	@Column(nullable = false)
 	private double valorTranferencia;
-	@ManyToOne
-	@JoinColumn(name = "idOrigem", nullable = false)
-	private Pessoa origem;
-	@ManyToOne
-	@JoinColumn(name = "IdDestino", nullable = false)
-	private Pessoa destino;
+	
 	@Column(length = 15, nullable = false)
 	private TipoTransacao tipoTransferencia;
 	
@@ -62,22 +53,6 @@ public class Transferencia {
 		}
 		
 		this.valorTranferencia = valor;
-	}
-	
-	public Pessoa getOrigen() {
-		return this.origem;
-	}
-	
-	public void setOrigem(Pessoa origem) {
-		this.origem = origem;
-	}
-	
-	public Pessoa getDestino() {
-		return this.destino;
-	}
-	
-	public void setDestino(Pessoa destino) {
-		this.destino = destino;
 	}
 	
 	public TipoTransacao getTipoTransacao() {
