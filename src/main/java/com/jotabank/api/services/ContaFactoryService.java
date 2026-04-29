@@ -1,6 +1,7 @@
 package com.jotabank.api.services;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,13 @@ public class ContaFactoryService implements ContaService{
 	@Override
 	public ContaDtosRequest criarContaCorrente(ContaDtosRequest request) throws ValidacaoDadosPessoa, VerificarDadosConta{
 		
+		if(request.getNomeCompleto().isBlank() && request.getCpf().isBlank()) {
+			throw new ValidacaoDadosPessoa("Erro ao inserir os dados pessoais.");
+			
+		}else if(request.getSaldo() <= 0) {
+			throw new VerificarDadosConta("Saldo inserido é menor ou igual a 0");
+		}
+		
 		Cliente titular = new Cliente(request.getNomeCompleto(), request.getCpf(),
 				request.getTelefone(), request.getEndereco(), request.getSalario());
 		Cliente clienteSalvo = repositoryCliente.save(titular);
@@ -40,8 +48,11 @@ public class ContaFactoryService implements ContaService{
 	}
 	
 	@Override
-	public void getContaPorId( Long idConta) {
+	public Optional<Conta> getContaPorId( Long idConta) {
 		
+			Optional<Conta> conta = repositoryConta.findById(idConta);
+			return conta;
+			
 		
 	}
 

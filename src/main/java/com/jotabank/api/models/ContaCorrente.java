@@ -3,7 +3,6 @@ package com.jotabank.api.models;
 import com.jotabank.api.exception.VerificarDadosConta;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.Table;
 
 @Entity

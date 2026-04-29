@@ -1,6 +1,7 @@
 package com.jotabank.api.models;
 
-import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import com.jotabank.api.exception.ValidacaoInsercaoExtrato;
 import com.jotabank.api.exception.VerificarDadosConta;
@@ -11,6 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.OneToMany;
 
 @MappedSuperclass
 public abstract class Conta {
@@ -37,10 +39,12 @@ public abstract class Conta {
 	private Cliente titular;
 	@Column(length = 50, nullable = false)	
 	private Double saldoConta;
+	@Column(length = 50, nullable = true)
+	@OneToMany
+	private List<ExtratoMovimentacao> extratoConta;
 	@Column(length = 50, nullable = true)	
-	private ArrayList<ExtratoMovimentacao> extratoConta;
-	@Column(length = 50, nullable = true)	
-	private ArrayList<Transferencia> minhasTransferencias;
+	@OneToMany
+	private List<Transferencia> minhasTransferencias;
 	
 	public Long getIdConta() {
 		return this.idConta;
@@ -74,7 +78,7 @@ public abstract class Conta {
 		this.saldoConta = saldo;
 	}
 	
-	public ArrayList<ExtratoMovimentacao> getExtrato(){
+	public List<ExtratoMovimentacao> getExtrato(){
 		return this.extratoConta;
 	}
 	
@@ -83,10 +87,10 @@ public abstract class Conta {
 			throw new ValidacaoInsercaoExtrato("Não tem movimentação para registrar no extrato");
 		}
 		
-		this.extratoConta.add(item);			
+		this.extratoConta.add(item);	
 	}
 	
-	public ArrayList<Transferencia> geTransferencia(){
+	public List<Transferencia> geTransferencia(){
 		return this.minhasTransferencias;
 	}
 	
