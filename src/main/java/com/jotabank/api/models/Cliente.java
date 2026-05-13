@@ -16,6 +16,10 @@ public class Cliente extends Pessoa {
 		setSalarioCliente(salario);
 	}
 	
+	public Cliente() {
+		
+	}
+	
 	@Column(length = 15, nullable = false)
 	private double salarioCliente;
 	

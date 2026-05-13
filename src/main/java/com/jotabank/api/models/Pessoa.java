@@ -23,6 +23,9 @@ public class Pessoa {
 		}
 		
 	}
+	public Pessoa() {
+		
+	}
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

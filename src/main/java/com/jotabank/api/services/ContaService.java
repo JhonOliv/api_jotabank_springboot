@@ -1,13 +1,13 @@
 package com.jotabank.api.services;
 
 
-import com.jotabank.api.models.Conta;
+import com.jotabank.api.models.ContaCorrente;
 
 import java.util.List;
 import java.util.Optional;
 
-import com.jotabank.api.dtos.ContaDtoResponse;
 import com.jotabank.api.dtos.ContaDtosRequest;
+import com.jotabank.api.exception.NegativeNumberException;
 import com.jotabank.api.exception.ValidacaoDadosPessoa;
 import com.jotabank.api.exception.VerificarDadosConta;
 
@@ -15,8 +15,8 @@ public interface ContaService {
 	
 	
 	public ContaDtosRequest criarContaCorrente(ContaDtosRequest request) throws ValidacaoDadosPessoa, VerificarDadosConta;
-	public Optional<Conta> getContaPorId(Long idConta);
-	public void atualizarDadosConta(Conta conta) throws VerificarDadosConta;
-	public void deletarContaById(Long id);
-	public List<Conta> getAllConta();
+	public ContaCorrente getContaPorId(Long idConta) throws NumberFormatException, NegativeNumberException;
+	public ContaDtosRequest  updateConta (Long id, ContaDtosRequest request) throws VerificarDadosConta, ValidacaoDadosPessoa;
+	public ContaDtosRequest deletarContaById(Long id);
+	public List<ContaCorrente> getAllConta();
 }

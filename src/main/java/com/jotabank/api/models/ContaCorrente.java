@@ -13,4 +13,8 @@ public class ContaCorrente extends Conta {
 		super(pessoa, saldo, password);
 		// TODO Auto-generated constructor stub
 	}
+	
+	public ContaCorrente () {
+		
+	}
 }

@@ -27,6 +27,10 @@ public abstract class Conta {
 		}
 	}
 	
+	public Conta() {
+		
+	}
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long idConta;
