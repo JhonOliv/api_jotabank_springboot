@@ -1,7 +1,6 @@
 package com.jotabank.api.services;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -68,7 +67,7 @@ public class ContaFactoryService implements ContaService{
 
 	@Override
 	@Transactional
-	public ContaDtosRequest updateConta( Long id, ContaDtosRequest request) throws VerificarDadosConta, ValidacaoDadosPessoa {
+	public String updateConta( Long id, ContaDtosRequest request) throws VerificarDadosConta, ValidacaoDadosPessoa {
 		// TODO Auto-generated method stub
 
 		if(request.getNomeCompleto().matches("^[\\p{L}\\s]+$\r\n") || request.getTelefone().matches("/^\\d+$/\r\n")) {
@@ -88,12 +87,7 @@ public class ContaFactoryService implements ContaService{
 		conta.setSaldoConta(request.getSaldo());
 		conta.setPassword(request.getPassword());
 		
-		return new ContaDtosRequest(clinte.getNome(), conta.getSaldoConta());
-		
-		
-		
-		
-		
+		return "Atualizado com sucesso";
 	}
 
 	@Override

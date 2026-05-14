@@ -41,13 +41,13 @@ public class ContaDtosRequest {
 	public void setEndereco(String endereco) {
 		this.endereco = endereco;
 	}
-	public double getSalario() {
+	public Double getSalario() {
 		return salario;
 	}
 	public void setSalario(Double salario) {
 		this.salario = salario;
 	}
-	public double getSaldo() {
+	public Double getSaldo() {
 		return saldo;
 	}
 	public void setSaldo(Double saldo) {
