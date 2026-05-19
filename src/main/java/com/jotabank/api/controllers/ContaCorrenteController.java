@@ -1,7 +1,6 @@
 package com.jotabank.api.controllers;
 
 
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,12 +13,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.jotabank.api.dtos.ContaDtoResponse;
 import com.jotabank.api.dtos.ContaDtosRequest;
 import com.jotabank.api.exception.MessageError;
+import com.jotabank.api.exception.MessageSuccess;
 import com.jotabank.api.exception.NegativeNumberException;
 import com.jotabank.api.exception.ValidacaoDadosPessoa;
 import com.jotabank.api.exception.VerificarDadosConta;
-import com.jotabank.api.models.ContaCorrente;
 import com.jotabank.api.services.ContaFactoryService;
 
 @RestController
@@ -35,16 +35,29 @@ public class ContaCorrenteController {
 	}
 	
 	@PostMapping("/criarConta")
-	public ResponseEntity<ContaDtosRequest> criarConta(@RequestBody ContaDtosRequest request) throws ValidacaoDadosPessoa, VerificarDadosConta {
+	public ResponseEntity<?> criarConta(@RequestBody ContaDtosRequest request) throws ValidacaoDadosPessoa, VerificarDadosConta {
 				
+		if(request.getNomeCompleto().isBlank() || request.getCpf().isBlank()) {
+			MessageError error = new MessageError("Dados informados estão incorretos", "404");
+			return ResponseEntity.badRequest().body(error);
+		}
+		
 		servContaCorrente.criarContaCorrente(request); 
-		return new ResponseEntity<>(request, HttpStatus.CREATED);
+		MessageSuccess success = new MessageSuccess("Conta criada com sucesso!", "201");
+		
+		return ResponseEntity.status(HttpStatus.CREATED).body(success);
 
 	}
 	
 	@GetMapping("/todasContas")
-	public List<ContaCorrente> getTodasContas(){
-		return servContaCorrente.getAllConta();
+	public ResponseEntity<?> getTodasContas(){
+		
+		if(servContaCorrente.getAllConta().isEmpty()) {
+			MessageError error = new MessageError("Lista de Contas está vazia!", "422");
+			return ResponseEntity.badRequest().body(error);
+		}
+		
+		return ResponseEntity.status(HttpStatus.OK).body(servContaCorrente.getAllConta());
 		
 	}
 	
@@ -52,25 +65,38 @@ public class ContaCorrenteController {
 	
 	public ResponseEntity<?> buscarContaById(@PathVariable("id") Long id) throws NumberFormatException, NegativeNumberException{
 		
-		if(id <= 0) {
+		if(id.toString().matches("^[\\\\p{L}\\\\s]+$\\r\\n") || id <= 0 ) {
 			
 			MessageError error = new MessageError("Error, valor igual a 0 ou é negativo!", "404");
 			return ResponseEntity.badRequest().body(error);
 		}
-		ContaCorrente conta = servContaCorrente.getContaPorId(id);
-		return ResponseEntity.ok(conta);
+		ContaDtoResponse conta = servContaCorrente.getContaPorId(id);
+		return ResponseEntity.status(HttpStatus.OK).body(conta);
 	}
 	
 	@PutMapping("/atualizarDadosConta/{id}")
 	public ResponseEntity<?> atualizarDadosConta( @PathVariable("id") Long id, @RequestBody ContaDtosRequest request) throws VerificarDadosConta, ValidacaoDadosPessoa{
 		
-		return ResponseEntity.ok(servContaCorrente.updateConta(id, request));
+		String  dtoConta = servContaCorrente.updateConta(id, request);
+		return ResponseEntity.status(HttpStatus.OK).body(dtoConta);
 		
 	}
 	
 	@DeleteMapping("/deletarConta/{id}")
 	public ResponseEntity<?> deletarContaById(@PathVariable("id") Long id){
+		System.out.print(id.toString().matches("^\\d+$\r\n"));
 		
-		return ResponseEntity.ok(servContaCorrente.deletarContaById(id));
+		if(id.toString().matches("^\\d+$\r\n") || id <= 0 ) {
+
+			MessageError error = new MessageError("Erro ao deletar conta do usuário.", "404");
+			return ResponseEntity.badRequest().body(error);
+		}
+		
+		ContaDtosRequest dtoConta =  servContaCorrente.deletarContaById(id);
+		
+		MessageSuccess success = new MessageSuccess("Conta do " + dtoConta.getNomeCompleto() + 
+				" foi deletada com sucesso!", "200");
+		
+		return ResponseEntity.status(HttpStatus.OK).body(success);
 	}
 }

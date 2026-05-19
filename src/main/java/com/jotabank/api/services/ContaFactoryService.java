@@ -1,10 +1,12 @@
 package com.jotabank.api.services;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.jotabank.api.dtos.ContaDtoResponse;
 import com.jotabank.api.dtos.ContaDtosRequest;
 import com.jotabank.api.exception.NegativeNumberException;
 import com.jotabank.api.exception.ValidacaoDadosPessoa;
@@ -50,7 +52,7 @@ public class ContaFactoryService implements ContaService{
 	}
 	
 	@Override
-	public ContaCorrente getContaPorId(Long idConta) throws NumberFormatException, NegativeNumberException {
+	public ContaDtoResponse getContaPorId(Long idConta) throws NumberFormatException, NegativeNumberException {
 		
 			if(idConta.toString().matches("^[\\\\p{L}\\\\s]+$\\r\\n")) {
 				throw new NumberFormatException("Aceita somente número!");
@@ -60,7 +62,9 @@ public class ContaFactoryService implements ContaService{
 		
 			ContaCorrente conta = repositoryConta.findById(idConta).orElse(null);
 			
-			return conta;
+			return new ContaDtoResponse(conta.getTitular().getNome(), conta.getTitular().getCpf(), conta.getTitular().getTelefone(),
+					conta.getTitular().getEndereco(), conta.getTitular().getSalarioCliente(), conta.getSaldoConta());
+			
 			
 		
 	}
@@ -102,8 +106,17 @@ public class ContaFactoryService implements ContaService{
 	}
 
 	@Override
-	public List<ContaCorrente> getAllConta() {				
-		return repositoryConta.findAll();
+	public List<ContaDtoResponse> getAllConta() {	
+		
+		List<ContaDtoResponse> contaResponse = new ArrayList<ContaDtoResponse>();
+		
+		repositoryConta.findAll().stream().forEach(conta -> {
+			ContaDtoResponse resConta = new ContaDtoResponse(conta); 
+			contaResponse.add(resConta);
+		});
+		
+		return contaResponse;
+		
 	}
 
 

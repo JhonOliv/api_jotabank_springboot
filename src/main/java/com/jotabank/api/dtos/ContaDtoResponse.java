@@ -1,31 +1,82 @@
 package com.jotabank.api.dtos;
 
-import com.jotabank.api.models.Cliente;
-import com.jotabank.api.models.ExtratoMovimentacao;
-import com.jotabank.api.models.Transferencia;
+import com.jotabank.api.models.Conta;
 
-import java.util.List;
-
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 public class ContaDtoResponse {
-	
-	private int numConta;
-	private Cliente titular;
+
+	@NotBlank(message = "Nome é obrigatório")
+	@Size(min = 3, max = 100)
+	private String nomeCompleto;
+	@NotBlank
+	@Size(min= 11, max = 11)
+	private String cpf;
+	@Size(min = 11, max = 13)
+	private String telefone;
+	@Size(max = 70)
+	private String endereco;
+	@NotBlank
+	private Double salario;
+	@NotBlank
 	private Double saldo;
-	private List<ExtratoMovimentacao> extrato;
-	private List<Transferencia> transferencia;
+	@NotBlank
+	private int contaNumber;
 	
-	public int getNumConta() {
-		return numConta;
+	public ContaDtoResponse() {
+		
 	}
-	public void setNumConta(int numConta) {
-		this.numConta = numConta;
+	
+	public ContaDtoResponse(Conta conta) {
+		setNomeCompleto(conta.getTitular().getNome());
+		setCpf(conta.getTitular().getCpf());
+		setTelefone(conta.getTitular().getTelefone());
+		setEndereco(conta.getTitular().getEndereco());
+		setSalario(conta.getTitular().getSalarioCliente());
+		setSaldo(conta.getSaldoConta());
+		setContaNumber(conta.getNumConta());
 	}
-	public Cliente getTitular() {
-		return titular;
+	
+	
+	public ContaDtoResponse (String nome, String cpf, String tel, String end, Double salario, Double saldo) {
+		setNomeCompleto(nome);
+		setCpf(cpf);
+		setTelefone(tel);
+		setEndereco(end);
+		setSalario(salario);
+		setSaldo(saldo);
 	}
-	public void setTitular(Cliente titular) {
-		this.titular = titular;
+	
+	public String getNomeCompleto() {
+		return nomeCompleto;
+	}
+	public void setNomeCompleto(String nomeCompleto) {
+		this.nomeCompleto = nomeCompleto;
+	}
+	public String getCpf() {
+		return cpf;
+	}
+	public void setCpf(String cpf) {
+		this.cpf = cpf;
+	}
+	public String getTelefone() {
+		return telefone;
+	}
+	public void setTelefone(String telefone) {
+		this.telefone = telefone;
+	}
+	public String getEndereco() {
+		return endereco;
+	}
+	public void setEndereco(String endereco) {
+		this.endereco = endereco;
+	}
+	public Double getSalario() {
+		return salario;
+	}
+	public void setSalario(Double salario) {
+		this.salario = salario;
 	}
 	public Double getSaldo() {
 		return saldo;
@@ -33,18 +84,17 @@ public class ContaDtoResponse {
 	public void setSaldo(Double saldo) {
 		this.saldo = saldo;
 	}
-	public List<ExtratoMovimentacao> getExtrato() {
-		return extrato;
+
+	public int getContaNumber() {
+		return contaNumber;
 	}
-	public void setExtrato(List<ExtratoMovimentacao> extrato) {
-		this.extrato = extrato;
+
+	public void setContaNumber(int contaNumber) {
+		this.contaNumber = contaNumber;
 	}
-	public List<Transferencia> getTransferencia() {
-		return transferencia;
-	}
-	public void setTransferencia(List<Transferencia> transferencia) {
-		this.transferencia = transferencia;
-	}
+	
+	
+	
 	
 	
 

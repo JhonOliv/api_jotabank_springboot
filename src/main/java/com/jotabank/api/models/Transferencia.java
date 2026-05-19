@@ -9,6 +9,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -24,15 +25,20 @@ public class Transferencia {
 	}
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.UUID)
 	private Long idTransferencia;
 	@Column(length = 15, nullable = false)
 	private final String dataTransacao = String.valueOf(LocalDate.now());
 	@Column(nullable = false)
 	private double valorTranferencia;
-	
 	@Column(length = 15, nullable = false)
 	private TipoTransacao tipoTransferencia;
+	@Column(nullable = false)
+	@OneToOne
+	private Conta destino;
+	@Column(nullable = false)
+	@OneToOne
+	private Conta origem;
 	
 	public Long getIdTransferencia() {
 		return this.idTransferencia;
@@ -46,12 +52,7 @@ public class Transferencia {
 		return this.valorTranferencia;
 	}
 	
-	public void setValorTransacao(double valor) throws ValidacaoInsercaoTransferencia {
-		
-		if(valor <= 0) {
-			throw new ValidacaoInsercaoTransferencia("Valor inserido não é menor ou igual a zero, valide as informações inseridas.");
-		}
-		
+	public void setValorTransacao(double valor) {
 		this.valorTranferencia = valor;
 	}
 	

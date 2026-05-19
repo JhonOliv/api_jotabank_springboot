@@ -32,7 +32,7 @@ public abstract class Conta {
 	}
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.UUID)
 	private Long idConta;
 	@Column(length = 50, nullable = false)	
 	private final int numConta  = (int) Math.round(Math.random() * 10000);

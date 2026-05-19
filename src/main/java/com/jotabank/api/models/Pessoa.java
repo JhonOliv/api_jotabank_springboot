@@ -28,7 +28,7 @@ public class Pessoa {
 	}
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.UUID)
 	private Long idPessoa;
 	@Column(length = 50, nullable = false)
 	private String nome;
