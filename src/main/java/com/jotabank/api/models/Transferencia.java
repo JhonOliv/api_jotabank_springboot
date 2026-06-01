@@ -17,15 +17,17 @@ import jakarta.persistence.Table;
 
 public class Transferencia {
 
-	public Transferencia(double valorTransferencia, Pessoa origem, Pessoa destino, TipoTransacao tipo) throws ValidacaoInsercaoTransferencia {
+	public Transferencia(double valorTransferencia, ContaCorrente origem, ContaCorrente destino, TipoTransacao tipo) throws ValidacaoInsercaoTransferencia {
 		// TODO Auto-generated constructor stub
 		setValorTransacao(valorTransferencia);
 		setTipoTrasacao(tipo);
-
+		setOrigem(origem);
+		setDestino(destino);
 	}
 	
+	public Transferencia() {}
 	@Id
-	@GeneratedValue(strategy = GenerationType.UUID)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long idTransferencia;
 	@Column(length = 15, nullable = false)
 	private final String dataTransacao = String.valueOf(LocalDate.now());
@@ -33,12 +35,10 @@ public class Transferencia {
 	private double valorTranferencia;
 	@Column(length = 15, nullable = false)
 	private TipoTransacao tipoTransferencia;
-	@Column(nullable = false)
 	@OneToOne
-	private Conta destino;
-	@Column(nullable = false)
+	private ContaCorrente destino;
 	@OneToOne
-	private Conta origem;
+	private ContaCorrente origem;
 	
 	public Long getIdTransferencia() {
 		return this.idTransferencia;
@@ -62,6 +62,22 @@ public class Transferencia {
 	
 	public void setTipoTrasacao(TipoTransacao tipo) {
 		this.tipoTransferencia = tipo;
+	}
+
+	public ContaCorrente getDestino() {
+		return destino;
+	}
+
+	public void setDestino(ContaCorrente destino) {
+		this.destino = destino;
+	}
+
+	public ContaCorrente getOrigem() {
+		return origem;
+	}
+
+	public void setOrigem(ContaCorrente origem) {
+		this.origem = origem;
 	}
 	
 }

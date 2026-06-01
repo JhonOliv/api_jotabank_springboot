@@ -32,7 +32,7 @@ public abstract class Conta {
 	}
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.UUID)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long idConta;
 	@Column(length = 50, nullable = false)	
 	private final int numConta  = (int) Math.round(Math.random() * 10000);
@@ -43,10 +43,8 @@ public abstract class Conta {
 	private Cliente titular;
 	@Column(length = 50, nullable = false)	
 	private Double saldoConta;
-	@Column(length = 50, nullable = true)
-	@OneToMany
-	private List<ExtratoMovimentacao> extratoConta;
-	@Column(length = 50, nullable = true)	
+	
+	@Autowired
 	@OneToMany
 	private List<Transferencia> minhasTransferencias;
 	
@@ -82,20 +80,9 @@ public abstract class Conta {
 		this.saldoConta = saldo;
 	}
 	
-	public List<ExtratoMovimentacao> getExtrato(){
-		return this.extratoConta;
-	}
-	
-	public void setItemExtrato(ExtratoMovimentacao item) throws Exception {
-		if(item == null) {
-			throw new ValidacaoInsercaoExtrato("Não tem movimentação para registrar no extrato");
-		}
-		
-		this.extratoConta.add(item);	
-	}
 	
 	public List<Transferencia> geTransferencia(){
-		return this.minhasTransferencias;
+		return minhasTransferencias;
 	}
 	
 	public void setItemTransferencia(Transferencia item) throws Exception {

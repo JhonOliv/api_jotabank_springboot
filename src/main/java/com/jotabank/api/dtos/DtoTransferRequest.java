@@ -7,16 +7,36 @@ import com.jotabank.api.models.TipoTransacao;
 public class DtoTransferRequest {
 	
 
-
-	private Long idTransferencia;
 	private final String dataTransacao = String.valueOf(LocalDate.now());
 	private double valorTranferencia;
-	private TipoTransacao tipoTransferencia;
+	private String cpf;
+	private String tel;	
 	
-	public Long getIdTransferencia() {
-		return this.idTransferencia;
+	
+	public double getValorTranferencia() {
+		return valorTranferencia;
 	}
-	
+
+	public void setValorTranferencia(double valorTranferencia) {
+		this.valorTranferencia = valorTranferencia;
+	}
+
+	public String getCpf() {
+		return cpf;
+	}
+
+	public void setCpf(String cpf) {
+		this.cpf = cpf;
+	}
+
+	public String getTel() {
+		return tel;
+	}
+
+	public void setTel(String tel) {
+		this.tel = tel;
+	}
+
 	public String getDataTransacao() {
 		return this.dataTransacao;
 	}
@@ -29,12 +49,6 @@ public class DtoTransferRequest {
 		this.valorTranferencia = valor;
 	}
 	
-	public TipoTransacao getTipoTransacao() {
-		return this.tipoTransferencia;
-	}
 	
-	public void setTipoTrasacao(TipoTransacao tipo) {
-		this.tipoTransferencia = tipo;
-	}
 
 }

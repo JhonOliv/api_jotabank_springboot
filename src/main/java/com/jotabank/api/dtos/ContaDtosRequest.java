@@ -31,6 +31,7 @@ public class ContaDtosRequest {
 		setNomeCompleto(nome);
 		setSaldo(saldoConta);
 	}
+	
 	public ContaDtosRequest (String nome, String cpf, String tel, String end, Double salario, Double saldo) {
 		setNomeCompleto(nome);
 		setCpf(cpf);

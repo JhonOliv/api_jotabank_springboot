@@ -28,7 +28,7 @@ public class Pessoa {
 	}
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.UUID)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long idPessoa;
 	@Column(length = 50, nullable = false)
 	private String nome;
@@ -39,6 +39,9 @@ public class Pessoa {
 	@Column(length = 100, nullable = false)
 	private String endereco;
 	
+	public Long getIdPessoa() {
+		return this.idPessoa;
+	}
 	
 	public String getNome() {
 		return this.nome;

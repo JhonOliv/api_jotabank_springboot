@@ -86,10 +86,8 @@ public class ContaFactoryService implements ContaService{
 		clinte.setCpf(request.getCpf());
 		clinte.setEndereco(request.getEndereco());
 		clinte.setTelefone(request.getTelefone());
-		clinte.setSalarioCliente(request.getSalario());
-		
+		clinte.setSalarioCliente(request.getSalario());		
 		conta.setSaldoConta(request.getSaldo());
-		conta.setPassword(request.getPassword());
 		
 		return "Atualizado com sucesso";
 	}

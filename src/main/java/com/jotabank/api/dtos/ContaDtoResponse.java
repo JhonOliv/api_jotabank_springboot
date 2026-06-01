@@ -84,18 +84,11 @@ public class ContaDtoResponse {
 	public void setSaldo(Double saldo) {
 		this.saldo = saldo;
 	}
-
 	public int getContaNumber() {
 		return contaNumber;
 	}
-
 	public void setContaNumber(int contaNumber) {
 		this.contaNumber = contaNumber;
-	}
-	
-	
-	
-	
-	
+	}	
 
 }

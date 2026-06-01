@@ -1,41 +1,88 @@
 package com.jotabank.api.services;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.jotabank.api.dtos.DtoTransferResponse;
+import com.jotabank.api.exception.NegativeNumberException;
+import com.jotabank.api.exception.ValidacaoInsercaoTransferencia;
 import com.jotabank.api.models.Conta;
+import com.jotabank.api.models.ContaCorrente;
+import com.jotabank.api.models.ExtratoMovimentacao;
+import com.jotabank.api.models.TipoTransacao;
+import com.jotabank.api.models.Transferencia;
+import com.jotabank.api.repositories.ContaRepository;
+import com.jotabank.api.repositories.ExtratoMovimentacaoRepository;
+import com.jotabank.api.repositories.TransferenciaRepository;
 
 @Service
 public class TransferenciaFactoryService implements TransferenciaService {
+	@Autowired
+	private TransferenciaRepository repositoryTransf;
+	@Autowired
+	private ContaRepository repositoryConta;
+	@Autowired
+	private ExtratoMovimentacaoRepository repositoryExtrato;
 
 	@Override
-	public DtoTransferResponse transfePix(Conta titular, Conta destino, double valor) {
+	public DtoTransferResponse transfePix(Long id, String cpf, double valor) throws Exception  {
 		// TODO Auto-generated method stub
-		return null;
+		try {
+			
+			if(valor <= 0 || Double.toString(valor).matches("\"/^\\\\d+$/\\r\\n\"")) {
+				throw new NegativeNumberException("Informação inserida não é compatível com o esperado revise a sua solicitação!");
+			}
+			
+			ContaCorrente origem = repositoryConta.findById(id).orElse(null);
+			ContaCorrente destino = repositoryConta.getConta(cpf);
+						
+			Transferencia trans = new Transferencia(valor, origem, destino, TipoTransacao.Pix);
+			ExtratoMovimentacao extrato = new ExtratoMovimentacao(TipoTransacao.Pix, origem.getTitular().getCpf(), valor, origem, destino);
+			destino.setSaldoConta(destino.getSaldoConta() + valor);
+			origem.setSaldoConta(origem.getSaldoConta() - valor);
+						
+			
+			DtoTransferResponse response = new DtoTransferResponse();
+			response.setTipoTrasacao(TipoTransacao.Pix);
+			response.setDestino(destino);
+			response.setOrigem(origem);
+			response.setValorTransacao(valor);
+			
+			repositoryExtrato.save(extrato);
+			repositoryConta.save(destino);
+			repositoryConta.save(origem);
+			repositoryTransf.save(trans);
+			return response; 
+				
+		} catch (ValidacaoInsercaoTransferencia e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NegativeNumberException e) {
+			// TODO: handle exception
+			e.getMessage();
+		}
+		return null; 
+		
 	}
 
 	@Override
-	public DtoTransferResponse transfeTed(Conta titular, Conta destino, double valor) {
+	public void transfeTed(Conta titular, Conta destino, double valor) {
 		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override
-	public DtoTransferResponse transfeDoc(Conta titular, Conta destino, double valor) {
+	public void transfeDoc(Conta titular, Conta destino, double valor) {
 		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override
-	public DtoTransferResponse transfeSaque(Conta conta, double saldo) {
+	public void transfeSaque(Conta conta, double saldo) {
 		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override
-	public DtoTransferResponse transfeDeposito(Conta conta, double deposito) {
+	public void transfeDeposito(Conta conta, double deposito) {
 		// TODO Auto-generated method stub
-		return null;
 	}
 	
 	

@@ -5,9 +5,9 @@ import com.jotabank.api.models.Conta;
 
 public interface TransferenciaService {
 	
-	public DtoTransferResponse transfePix(Conta titular, Conta destino, double valor);
-	public DtoTransferResponse transfeTed(Conta titular, Conta destino, double valor);
-	public DtoTransferResponse transfeDoc(Conta titular, Conta destino, double valor);
-	public DtoTransferResponse transfeSaque(Conta conta, double saldo);
-	public DtoTransferResponse transfeDeposito(Conta conta, double deposito);
+	public DtoTransferResponse transfePix(Long id, String cpf, double valor) throws Exception;
+	public void transfeTed(Conta titular, Conta destino, double valor);
+	public void transfeDoc(Conta titular, Conta destino, double valor);
+	public void transfeSaque(Conta conta, double saldo);
+	public void transfeDeposito(Conta conta, double deposito);
 }
