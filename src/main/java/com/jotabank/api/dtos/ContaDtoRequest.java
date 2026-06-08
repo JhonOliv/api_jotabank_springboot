@@ -3,7 +3,7 @@ package com.jotabank.api.dtos;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-public class ContaDtosRequest {
+public class ContaDtoRequest {
 
 	@NotBlank(message = "Nome é obrigatório")
 	@Size(min = 3, max = 100)
@@ -22,17 +22,17 @@ public class ContaDtosRequest {
 	@Size(min = 4, max = 6)
 	private String password;
 	
-	public ContaDtosRequest() {
+	public ContaDtoRequest() {
 		
 	}
 	
-	public ContaDtosRequest(String nome, Double saldoConta) {
+	public ContaDtoRequest(String nome, Double saldoConta) {
 		// TODO Auto-generated constructor stub
 		setNomeCompleto(nome);
 		setSaldo(saldoConta);
 	}
 	
-	public ContaDtosRequest (String nome, String cpf, String tel, String end, Double salario, Double saldo) {
+	public ContaDtoRequest (String nome, String cpf, String tel, String end, Double salario, Double saldo) {
 		setNomeCompleto(nome);
 		setCpf(cpf);
 		setTelefone(tel);

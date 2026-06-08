@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.jotabank.api.dtos.ContaDtoResponse;
-import com.jotabank.api.dtos.ContaDtosRequest;
+import com.jotabank.api.dtos.ContaDtoRequest;
 import com.jotabank.api.exception.NegativeNumberException;
 import com.jotabank.api.exception.ValidacaoDadosPessoa;
 import com.jotabank.api.exception.VerificarDadosConta;
@@ -30,8 +30,9 @@ public class ContaFactoryService implements ContaService{
 		return "Hello World my dev " + nome;
 	}
 
+	@Transactional
 	@Override
-	public ContaDtosRequest criarContaCorrente(ContaDtosRequest request) throws ValidacaoDadosPessoa, VerificarDadosConta{
+	public ContaDtoRequest criarContaCorrente(ContaDtoRequest request) throws ValidacaoDadosPessoa, VerificarDadosConta{
 		
 		if(request.getNomeCompleto().isBlank() && request.getCpf().isBlank()) {
 			throw new ValidacaoDadosPessoa("Erro ao inserir os dados pessoais.");
@@ -47,7 +48,7 @@ public class ContaFactoryService implements ContaService{
 		ContaCorrente novaConta = new ContaCorrente(clienteSalvo, request.getSaldo(), request.getPassword());	
 		ContaCorrente contaCriada = repositoryConta.save(novaConta);
 		
-		return new ContaDtosRequest(clienteSalvo.getNome(), contaCriada.getSaldoConta());
+		return new ContaDtoRequest(clienteSalvo.getNome(), contaCriada.getSaldoConta());
 		
 	}
 	
@@ -60,7 +61,7 @@ public class ContaFactoryService implements ContaService{
 				throw new NegativeNumberException("Você digitou um número negativo.");
 			}
 		
-			ContaCorrente conta = repositoryConta.findById(idConta).orElse(null);
+			Conta conta = repositoryConta.findById(idConta).orElse(null);
 			
 			return new ContaDtoResponse(conta.getTitular().getNome(), conta.getTitular().getCpf(), conta.getTitular().getTelefone(),
 					conta.getTitular().getEndereco(), conta.getTitular().getSalarioCliente(), conta.getSaldoConta());
@@ -71,7 +72,7 @@ public class ContaFactoryService implements ContaService{
 
 	@Override
 	@Transactional
-	public String updateConta( Long id, ContaDtosRequest request) throws VerificarDadosConta, ValidacaoDadosPessoa {
+	public String updateConta( Long id, ContaDtoRequest request) throws VerificarDadosConta, ValidacaoDadosPessoa {
 		// TODO Auto-generated method stub
 
 		if(request.getNomeCompleto().matches("^[\\p{L}\\s]+$\r\n") || request.getTelefone().matches("/^\\d+$/\r\n")) {
@@ -93,13 +94,14 @@ public class ContaFactoryService implements ContaService{
 	}
 
 	@Override
-	public ContaDtosRequest deletarContaById(Long id) {
+	@Transactional
+	public ContaDtoRequest deletarContaById(Long id) {
 		// TODO Auto-generated method stub
 		
-	ContaCorrente conta = repositoryConta.findById(id).orElseThrow(() -> new RuntimeException("Conta não encontada."));
+	Conta conta = repositoryConta.findById(id).orElseThrow(() -> new RuntimeException("Conta não encontada."));
 	 repositoryConta.delete(conta);
 	
-	 return new ContaDtosRequest(conta.getTitular().getNome(), conta.getSaldoConta());
+	 return new ContaDtoRequest(conta.getTitular().getNome(), conta.getSaldoConta());
 		
 	}
 

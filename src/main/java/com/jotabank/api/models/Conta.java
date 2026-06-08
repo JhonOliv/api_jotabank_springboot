@@ -1,24 +1,21 @@
 package com.jotabank.api.models;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import com.jotabank.api.exception.ValidacaoInsercaoExtrato;
 import com.jotabank.api.exception.VerificarDadosConta;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.MappedSuperclass;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 
-@MappedSuperclass
+@Entity
+@Table(name="tab_Conta")
 public abstract class Conta {
 	
 	public Conta(Cliente pessoa, Double saldo, String password) throws VerificarDadosConta {
-		if(!pessoa.equals(null) && saldo >= 0) {
+		if(!pessoa.equals(null) && saldo.intValue() > 0) {
 			setTitular(pessoa);
 			setSaldoConta(saldo);
 			setPassword(password);
@@ -38,15 +35,10 @@ public abstract class Conta {
 	private final int numConta  = (int) Math.round(Math.random() * 10000);
 	@Column(length = 100, nullable = false)
 	private String password;
-	@Autowired
 	@ManyToOne
 	private Cliente titular;
 	@Column(length = 50, nullable = false)	
 	private Double saldoConta;
-	
-	@Autowired
-	@OneToMany
-	private List<Transferencia> minhasTransferencias;
 	
 	public Long getIdConta() {
 		return this.idConta;
@@ -72,7 +64,7 @@ public abstract class Conta {
 		this.titular = titular;
 	}
 	
-	public double getSaldoConta() {
+	public Double getSaldoConta() {
 		return this.saldoConta;
 	}
 	
@@ -80,17 +72,4 @@ public abstract class Conta {
 		this.saldoConta = saldo;
 	}
 	
-	
-	public List<Transferencia> geTransferencia(){
-		return minhasTransferencias;
-	}
-	
-	public void setItemTransferencia(Transferencia item) throws Exception {
-		if(item == null) {
-			throw new ValidacaoInsercaoExtrato("Não tem transferência para registrar em Transferência!");
-		}	
-		this.minhasTransferencias.add(item);			
-	}
-	
-
 }

@@ -34,7 +34,7 @@ public class ContaDtoResponse {
 		setTelefone(conta.getTitular().getTelefone());
 		setEndereco(conta.getTitular().getEndereco());
 		setSalario(conta.getTitular().getSalarioCliente());
-		setSaldo(conta.getSaldoConta());
+		setSaldo(conta.getSaldoConta().doubleValue());
 		setContaNumber(conta.getNumConta());
 	}
 	

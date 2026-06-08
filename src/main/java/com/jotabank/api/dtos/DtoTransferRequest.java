@@ -1,23 +1,22 @@
 package com.jotabank.api.dtos;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
-
-import com.jotabank.api.models.TipoTransacao;
 
 public class DtoTransferRequest {
 	
 
 	private final String dataTransacao = String.valueOf(LocalDate.now());
-	private double valorTranferencia;
+	private BigDecimal valorTranferencia;
 	private String cpf;
 	private String tel;	
 	
 	
-	public double getValorTranferencia() {
+	public BigDecimal getValorTranferencia() {
 		return valorTranferencia;
 	}
 
-	public void setValorTranferencia(double valorTranferencia) {
+	public void setValorTranferencia(BigDecimal valorTranferencia) {
 		this.valorTranferencia = valorTranferencia;
 	}
 
@@ -39,14 +38,6 @@ public class DtoTransferRequest {
 
 	public String getDataTransacao() {
 		return this.dataTransacao;
-	}
-	
-	public double getValorTransacao() {
-		return this.valorTranferencia;
-	}
-	
-	public void setValorTransacao(double valor) {
-		this.valorTranferencia = valor;
 	}
 	
 	

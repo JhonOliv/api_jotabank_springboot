@@ -4,10 +4,8 @@ import com.jotabank.api.exception.ValidacaoDadosPessoa;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "tab_cliente")
 public class Cliente extends Pessoa {
 
 	public Cliente(String nome, String cpf, String telefone, String endereco, Double salario) throws ValidacaoDadosPessoa {

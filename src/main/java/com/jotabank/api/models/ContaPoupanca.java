@@ -3,10 +3,8 @@ package com.jotabank.api.models;
 import com.jotabank.api.exception.VerificarDadosConta;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
 
 @Entity
-@Table(name="tab_contaPoupanca")
 public class ContaPoupanca extends Conta{
 	
 	public ContaPoupanca(Cliente pessoa, double saldo, String password) throws VerificarDadosConta {

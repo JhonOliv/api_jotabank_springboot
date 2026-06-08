@@ -1,10 +1,8 @@
 package com.jotabank.api.models;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
-import org.springframework.beans.factory.annotation.Autowired;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.jotabank.api.exception.ValidacaoInsercaoTransferencia;
 
 import jakarta.persistence.Column;
@@ -12,8 +10,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -22,9 +19,9 @@ import jakarta.persistence.Table;
 public class ExtratoMovimentacao {
 	
 	
-	public ExtratoMovimentacao(TipoTransacao tipo, String date, double valor, ContaCorrente origem, ContaCorrente destino) throws ValidacaoInsercaoTransferencia {
+	public ExtratoMovimentacao(TipoTransacao tipo, String date, BigDecimal valor, Conta origem, Conta destino) throws ValidacaoInsercaoTransferencia {
 		// TODO Auto-generated constructor stub
-		if(tipo != null && date != null && valor > 0) {
+		if(tipo != null && date != null && valor.intValue() > 0) {
 			setTipoTransacao(tipo);
 			setValor(valor);
 			setCorrente(origem);
@@ -44,17 +41,13 @@ public class ExtratoMovimentacao {
 	@Column(length = 15, nullable = false)
 	private String dateTransacao = String.valueOf(LocalDate.now());
 	@Column(length = 15, nullable = false)
-	private double valor;
-	@Autowired
-	@ManyToOne
-	@JoinColumn(name="conta_corrente_id")
-	@JsonIgnore
-	private ContaCorrente  corrente;
-	@Autowired
-	@ManyToOne
-	@JoinColumn(name="contaDestino")
-	@JsonIgnore
-	private ContaCorrente  destino;
+	private BigDecimal valor;
+	@OneToOne
+	private Conta  corrente;
+	@OneToOne	
+	private Conta  destino;
+	
+	
 	
 	
 	
@@ -62,26 +55,26 @@ public class ExtratoMovimentacao {
 		this.tipo = tipo;
 	}
 	
-	public double getValor() {
+	public BigDecimal getValor() {
 		return this.valor;
 	}
-	public void setValor(double valor) {
+	public void setValor(BigDecimal valor) {
 		this.valor = valor;
 	}
 
-	public ContaCorrente getCorrente() {
+	public Conta getCorrente() {
 		return corrente;
 	}
 
-	public void setCorrente(ContaCorrente corrente) {
+	public void setCorrente(Conta corrente) {
 		this.corrente = corrente;
 	}
 
-	public ContaCorrente getDestino() {
+	public Conta getDestino() {
 		return destino;
 	}
 
-	public void setDestino(ContaCorrente destino) {
+	public void setDestino(Conta destino) {
 		this.destino = destino;
 	}
 	

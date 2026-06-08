@@ -14,9 +14,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jotabank.api.dtos.ContaDtoResponse;
-import com.jotabank.api.dtos.ContaDtosRequest;
-import com.jotabank.api.exception.MessageError;
-import com.jotabank.api.exception.MessageSuccess;
+import com.jotabank.api.dtos.ContaDtoRequest;
+import com.jotabank.api.exception.GlobalExceptionHandler;
 import com.jotabank.api.exception.NegativeNumberException;
 import com.jotabank.api.exception.ValidacaoDadosPessoa;
 import com.jotabank.api.exception.VerificarDadosConta;
@@ -24,7 +23,7 @@ import com.jotabank.api.services.ContaFactoryService;
 
 @RestController
 @RequestMapping("v1/api/conta")
-public class ContaCorrenteController {
+public class ControllerConta {
 
 	@Autowired
 	private ContaFactoryService servContaCorrente;
@@ -35,15 +34,15 @@ public class ContaCorrenteController {
 	}
 	
 	@PostMapping("/criarConta")
-	public ResponseEntity<?> criarConta(@RequestBody ContaDtosRequest request) throws ValidacaoDadosPessoa, VerificarDadosConta {
+	public ResponseEntity<?> criarConta(@RequestBody ContaDtoRequest request) throws ValidacaoDadosPessoa, VerificarDadosConta {
 				
 		if(request.getNomeCompleto().isBlank() || request.getCpf().isBlank()) {
-			MessageError error = new MessageError("Dados informados estão incorretos", "404");
+			GlobalExceptionHandler error = new GlobalExceptionHandler("Dados informados estão incorretos", "404");
 			return ResponseEntity.badRequest().body(error);
 		}
 		
 		servContaCorrente.criarContaCorrente(request); 
-		MessageSuccess success = new MessageSuccess("Conta criada com sucesso!", "201");
+		GlobalExceptionHandler success = new GlobalExceptionHandler("Conta foi Criada com sucesso", "201");
 		
 		return ResponseEntity.status(HttpStatus.CREATED).body(success);
 
@@ -53,7 +52,7 @@ public class ContaCorrenteController {
 	public ResponseEntity<?> getTodasContas(){
 		
 		if(servContaCorrente.getAllConta().isEmpty()) {
-			MessageError error = new MessageError("Lista de Contas está vazia!", "422");
+			GlobalExceptionHandler error = new GlobalExceptionHandler("Lista de Contas está vazia!", "404");
 			return ResponseEntity.badRequest().body(error);
 		}
 		
@@ -67,7 +66,7 @@ public class ContaCorrenteController {
 		
 		if(id.toString().matches("^[\\\\p{L}\\\\s]+$\\r\\n") || id <= 0 ) {
 			
-			MessageError error = new MessageError("Error, valor igual a 0 ou é negativo!", "404");
+			GlobalExceptionHandler error = new GlobalExceptionHandler("Error, valor igual a 0 ou é negativo!", "404");
 			return ResponseEntity.badRequest().body(error);
 		}
 		ContaDtoResponse conta = servContaCorrente.getContaPorId(id);
@@ -75,7 +74,7 @@ public class ContaCorrenteController {
 	}
 	
 	@PutMapping("/atualizarDadosConta/{id}")
-	public ResponseEntity<?> atualizarDadosConta( @PathVariable("id") Long id, @RequestBody ContaDtosRequest request) throws VerificarDadosConta, ValidacaoDadosPessoa{
+	public ResponseEntity<?> atualizarDadosConta( @PathVariable("id") Long id, @RequestBody ContaDtoRequest request) throws VerificarDadosConta, ValidacaoDadosPessoa{
 		
 		String  dtoConta = servContaCorrente.updateConta(id, request);
 		return ResponseEntity.status(HttpStatus.OK).body(dtoConta);
@@ -88,13 +87,13 @@ public class ContaCorrenteController {
 		
 		if(id.toString().matches("^\\d+$\r\n") || id <= 0 ) {
 
-			MessageError error = new MessageError("Erro ao deletar conta do usuário.", "404");
+			GlobalExceptionHandler error = new GlobalExceptionHandler("Erro ao deletar conta do usuário.", "404");
 			return ResponseEntity.badRequest().body(error);
 		}
 		
-		ContaDtosRequest dtoConta =  servContaCorrente.deletarContaById(id);
+		ContaDtoRequest dtoConta =  servContaCorrente.deletarContaById(id);
 		
-		MessageSuccess success = new MessageSuccess("Conta do " + dtoConta.getNomeCompleto() + 
+		GlobalExceptionHandler success = new GlobalExceptionHandler("Conta do " + dtoConta.getNomeCompleto() + 
 				" foi deletada com sucesso!", "200");
 		
 		return ResponseEntity.status(HttpStatus.OK).body(success);

@@ -2,7 +2,7 @@ package com.jotabank.api.dtos;
 
 import java.time.LocalDate;
 
-import com.jotabank.api.models.ContaCorrente;
+import com.jotabank.api.models.Conta;
 import com.jotabank.api.models.TipoTransacao;
 
 public class DtoTransferResponse {
@@ -19,10 +19,10 @@ public class DtoTransferResponse {
 		return this.origem;
 	}
 
-	public void setOrigem(ContaCorrente origem) {
+	public void setOrigem(Conta origem) {
 		ContaDtoResponse dtoRequest = new ContaDtoResponse();
 		dtoRequest.setNomeCompleto(origem.getTitular().getNome());
-		dtoRequest.setSaldo(origem.getSaldoConta());
+		dtoRequest.setSaldo(origem.getSaldoConta().doubleValue());
 		dtoRequest.setContaNumber(origem.getNumConta());
 
 		this.origem = dtoRequest;
@@ -32,10 +32,10 @@ public class DtoTransferResponse {
 		return destino;
 	}
 
-	public void setDestino(ContaCorrente destino) {
+	public void setDestino(Conta destino) {
 		ContaDtoResponse dtoRequest = new ContaDtoResponse();
 		dtoRequest.setNomeCompleto(destino.getTitular().getNome());
-		dtoRequest.setSaldo(destino.getSaldoConta());
+		dtoRequest.setSaldo(destino.getSaldoConta().doubleValue());
 		dtoRequest.setContaNumber(destino.getNumConta());
 		this.destino = dtoRequest;
 	}
@@ -48,7 +48,7 @@ public class DtoTransferResponse {
 		return this.valorTranferencia;
 	}
 	
-	public void setValorTransacao(double valor) {
+	public void setValorTransacao(Double valor) {
 		this.valorTranferencia = valor;
 	}
 	
