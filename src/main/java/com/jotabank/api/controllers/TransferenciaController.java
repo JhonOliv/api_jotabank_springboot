@@ -14,14 +14,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.jotabank.api.dtos.DtoTransferRequest;
 import com.jotabank.api.dtos.DtoTransferResponse;
-import com.jotabank.api.dtos.HistoricoTransferenciaDTO;
 import com.jotabank.api.exception.GlobalExceptionHandler;
 import com.jotabank.api.exception.ValidacaoDadosPessoa;
 import com.jotabank.api.services.TransferenciaFactoryService;
 
 
 @RestController
-@RequestMapping("api/v1/transfer")
+@RequestMapping("v1/api/transfer")
 public class TransferenciaController {
 	@Autowired
 	private TransferenciaFactoryService serviceTransf;
@@ -63,17 +62,10 @@ public class TransferenciaController {
 		return null;
 	} 
 	
-	@GetMapping("historico/{cpf}")
-	public ResponseEntity<HistoricoTransferenciaDTO> getHistoricoTransferencia (@PathVariable String cpf) throws ValidacaoDadosPessoa{
+	@GetMapping("/historico/{cpf}")
+	public ResponseEntity<?> getHistoricoTransferencia (@PathVariable("cpf") String cpf) throws ValidacaoDadosPessoa{
 		
-		HistoricoTransferenciaDTO histTransf = serviceTransf.getHistoricoTransf(cpf);
-		
-		if(histTransf.nome().isBlank() || histTransf.dataTransferencia().toString().isBlank() 
-		|| histTransf.valorTransferencia().toString().isBlank()) {
-			GlobalExceptionHandler error = new GlobalExceptionHandler("404", "Dados não encontrado, entre em contato com seu administrador.");
-			ResponseEntity.badRequest().body(error);
-		}
-		
+		System.out.print("Acessou a rota!");
 		return ResponseEntity.status(HttpStatus.FOUND).body(serviceTransf.getHistoricoTransf(cpf));
 		
 	}

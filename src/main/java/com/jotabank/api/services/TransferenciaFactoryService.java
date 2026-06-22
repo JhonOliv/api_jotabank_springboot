@@ -1,6 +1,7 @@
 package com.jotabank.api.services;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,6 +36,9 @@ public class TransferenciaFactoryService implements TransferenciaService {
 	public DtoTransferResponse transfePix(Long id, String cpf, BigDecimal valor) throws Exception  {
 		// TODO Auto-generated method stub
 			Conta origem = repositoryConta.findById(id).orElseThrow(() -> new RuntimeException("Usuário não encontardo."));
+
+			DadosContaRequestDto destino = repositoryConta.getConta(cpf);
+			Conta destinoTransf = repositoryConta.findById(destino.getIdConta()).orElseThrow(() -> new RuntimeException("Erros ao buscar dados da conta"));
 			
 			DtoTransferResponse response = new DtoTransferResponse();
 		
@@ -42,16 +46,13 @@ public class TransferenciaFactoryService implements TransferenciaService {
 				throw new NegativeNumberException("Informação inserida não é compatível com o esperado revise a sua solicitação!");
 			}else if (origem.getSaldoConta().doubleValue() >= valor.doubleValue()) {
 				
-				DadosContaRequestDto destino = repositoryConta.getConta(cpf);
-				Conta destinoTransf = repositoryConta.findById(destino.getIdConta()).orElseThrow(() -> new RuntimeException("Erros ao buscar dados da conta"));
 				
 				Transferencia transfOrigem = new Transferencia(valor, TipoTransacao.Pix);
-				transfOrigem.setOrigem(origem);
-				transfOrigem.setDestino(destinoTransf);
+				transfOrigem.setConta(origem);
 				transfOrigem.setMovimentacao(TipoMovimentacao.Saida);
+				
 				Transferencia transfDestino = new Transferencia(valor, TipoTransacao.Pix);
-				transfDestino.setDestino(destinoTransf);
-				transfDestino.setOrigem(origem);
+				transfDestino.setConta(destinoTransf);
 				transfDestino.setMovimentacao(TipoMovimentacao.Entrada);
 				
 				ExtratoMovimentacao extrato = new ExtratoMovimentacao(TipoTransacao.Pix, origem.getTitular().getCpf(), valor, origem, destinoTransf);
@@ -102,17 +103,14 @@ public class TransferenciaFactoryService implements TransferenciaService {
 	}
 
 	@Override
-	public HistoricoTransferenciaDTO getHistoricoTransf(String cpf) throws ValidacaoDadosPessoa {
+	public List<HistoricoTransferenciaDTO> getHistoricoTransf(String cpf) throws ValidacaoDadosPessoa {
 		// TODO Auto-generated method stub
 		
-		if(!cpf.matches("^[0-9]+$\\")) {
-			throw new ValidacaoDadosPessoa("O campo CPF só pode aceitar valores númericos.");
-		}
+		List<HistoricoTransferenciaDTO> histTrans = repositoryTransf.buscarHistoricoPorCpf(cpf);
 		
-		HistoricoTransferenciaDTO histTrans = repositoryTransf.historicoTransferencia(cpf);
+		
 		return histTrans;
 	}
-	
 	
 
 }

@@ -7,6 +7,8 @@ import com.jotabank.api.exception.ValidacaoInsercaoTransferencia;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -36,14 +38,14 @@ public class Transferencia {
 	private BigDecimal valorTranferencia;
 	@Column(length = 15, nullable = false)
 	private TipoTransacao tipoTransferencia;
+	@Enumerated(EnumType.STRING)
 	@Column(length = 10, nullable = false)
 	private TipoMovimentacao movimentacao;
 	@ManyToOne
-	@JoinColumn(name = "conta_origem_id")
-	private Conta origem;
-	@ManyToOne
-	@JoinColumn(name = "conta_destino_id")
-	private Conta destino;
+	@JoinColumn(name = "conta")
+	private Conta conta;
+
+
 	
 	
 	
@@ -79,20 +81,12 @@ public class Transferencia {
 		this.tipoTransferencia = tipo;
 	}
 
-	public Conta getOrigem() {
-		return origem;
+	public Conta getConta() {
+		return conta;
 	}
 
-	public void setOrigem(Conta origem) {
-		this.origem = origem;
-	}
-
-	public Conta getDestino() {
-		return destino;
-	}
-
-	public void setDestino(Conta destino) {
-		this.destino = destino;
+	public void setConta(Conta conta) {
+		this.conta = conta;
 	}
 
 

@@ -2,6 +2,7 @@ package com.jotabank.api.services;
 
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import com.jotabank.api.dtos.DtoTransferResponse;
 import com.jotabank.api.dtos.HistoricoTransferenciaDTO;
@@ -15,5 +16,5 @@ public interface TransferenciaService {
 	public void transfeDoc(Conta titular, Conta destino, double valor);
 	public void transfeSaque(Conta conta, double saldo);
 	public void transfeDeposito(Conta conta, double deposito);
-	public HistoricoTransferenciaDTO getHistoricoTransf(String cpf) throws ValidacaoDadosPessoa;
+	public List<HistoricoTransferenciaDTO> getHistoricoTransf(String cpf) throws ValidacaoDadosPessoa;
 }
