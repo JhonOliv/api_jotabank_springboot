@@ -5,5 +5,7 @@ public enum TipoTransacao {
 	Ted,
 	Doc,
 	Saque,
-	Deposito
+	Deposito,
+	Emprestimo,
+	Investimento
 }

@@ -3,6 +3,7 @@ package com.jotabank.api.dtos;
 import com.jotabank.api.models.Conta;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 
 public class ContaDtoResponse {
@@ -17,9 +18,9 @@ public class ContaDtoResponse {
 	private String telefone;
 	@Size(max = 70)
 	private String endereco;
-	@NotBlank
+	@NotEmpty
 	private Double salario;
-	@NotBlank
+	@NotEmpty
 	private Double saldo;
 	@NotBlank
 	private int contaNumber;

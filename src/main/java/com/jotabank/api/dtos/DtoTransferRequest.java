@@ -10,7 +10,11 @@ public class DtoTransferRequest {
 	private BigDecimal valorTranferencia;
 	private String cpf;
 	private String tel;	
+	private int numConta;
 	
+	public Integer getNumConta() {
+		return this.numConta;
+	}
 	
 	public BigDecimal getValorTranferencia() {
 		return valorTranferencia;

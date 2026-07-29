@@ -11,6 +11,7 @@ import com.jotabank.api.dtos.DtoTransferResponse;
 import com.jotabank.api.dtos.HistoricoTransferenciaDTO;
 import com.jotabank.api.exception.NegativeNumberException;
 import com.jotabank.api.exception.ValidacaoDadosPessoa;
+import com.jotabank.api.exception.ValidacaoInsercaoTransferencia;
 import com.jotabank.api.models.Conta;
 import com.jotabank.api.models.ExtratoMovimentacao;
 import com.jotabank.api.models.TipoMovimentacao;
@@ -21,6 +22,7 @@ import com.jotabank.api.repositories.ExtratoMovimentacaoRepository;
 import com.jotabank.api.repositories.TransferenciaRepository;
 
 import jakarta.transaction.Transactional;
+import jakarta.validation.ValidationException;
 
 @Service
 public class TransferenciaFactoryService implements TransferenciaService {
@@ -33,84 +35,135 @@ public class TransferenciaFactoryService implements TransferenciaService {
 
 	@Transactional
 	@Override
-	public DtoTransferResponse transfePix(Long id, String cpf, BigDecimal valor) throws Exception  {
+	public DtoTransferResponse transfePix(Long id, String cpf, BigDecimal valor) throws Exception {
 		// TODO Auto-generated method stub
-			Conta origem = repositoryConta.findById(id).orElseThrow(() -> new RuntimeException("Usuário não encontardo."));
+		Conta origem = repositoryConta.findById(id).orElseThrow(() -> new RuntimeException("Usuário não encontardo."));
 
-			DadosContaRequestDto destino = repositoryConta.getConta(cpf);
-			Conta destinoTransf = repositoryConta.findById(destino.getIdConta()).orElseThrow(() -> new RuntimeException("Erros ao buscar dados da conta"));
+		DadosContaRequestDto destino = repositoryConta.getConta(cpf);
+		Conta destinoTransf = repositoryConta.findById(destino.getIdConta())
+				.orElseThrow(() -> new RuntimeException("Erros ao buscar dados da conta"));
+		DtoTransferResponse response = new DtoTransferResponse();
+
+		if (origem.getTitular().getCpf().equals(destinoTransf.getTitular().getCpf())) {
+			throw new ValidationException("Dados da Origem são as mesma de Destino");
 			
-			DtoTransferResponse response = new DtoTransferResponse();
+		} else if (Double.toString(valor.doubleValue()).matches("\"/^\\\\d+$/\\r\\n\"")) {
+			throw new NegativeNumberException(
+					"Informação inserida não é compatível com o esperado revise a sua solicitação!");
+		} else if (origem.getSaldoConta().doubleValue() >= valor.doubleValue()) {
+
+			Transferencia transfOrigem = new Transferencia(valor, TipoTransacao.Pix);
+			transfOrigem.setConta(origem);
+			transfOrigem.setMovimentacao(TipoMovimentacao.Saida);
+
+			Transferencia transfDestino = new Transferencia(valor, TipoTransacao.Pix);
+			transfDestino.setConta(destinoTransf);
+			transfDestino.setMovimentacao(TipoMovimentacao.Entrada);
+
+			ExtratoMovimentacao extratoOrigem = new ExtratoMovimentacao(TipoTransacao.Pix, valor);
+			ExtratoMovimentacao extratoDestino = new ExtratoMovimentacao(TipoTransacao.Pix, valor);
+
+			destinoTransf.setSaldoConta(destino.getSaldoConta() + valor.doubleValue());
+			origem.setSaldoConta(origem.getSaldoConta().doubleValue() - valor.doubleValue());
+
+			response.setTipoTrasacao(TipoTransacao.Pix);
+			response.setDestino(destinoTransf);
+			response.setOrigem(origem);
+			response.setValorTransacao(valor.doubleValue());
+
+			repositoryExtrato.save(extratoOrigem);
+			repositoryExtrato.save(extratoDestino);
+			repositoryTransf.save(transfOrigem);
+			repositoryTransf.save(transfDestino);
+			repositoryConta.save(destinoTransf);
+			repositoryConta.save(origem);
+
+			return response;
+
+		} else {
+			return response;
+		}
+
+	}
+
+	@Transactional
+	@Override
+	public DtoTransferResponse transfeTed(Long id, int numConta, String cpf, BigDecimal valor) throws ValidacaoInsercaoTransferencia {
 		
-			if(Double.toString(valor.doubleValue()).matches("\"/^\\\\d+$/\\r\\n\"")) {
-				throw new NegativeNumberException("Informação inserida não é compatível com o esperado revise a sua solicitação!");
-			}else if (origem.getSaldoConta().doubleValue() >= valor.doubleValue()) {
+		Conta origem = repositoryConta.findById(id).orElseThrow(() -> new RuntimeException("Erro ao buscar Conta"));
+		DadosContaRequestDto destinoRef = repositoryConta.getConta(cpf);
+		
+		Conta destino = repositoryConta.findById(destinoRef.getIdConta()).orElseThrow(() ->
+		new RuntimeException("Conta de destino não encontrada!"));
+		
+		if(origem == null || destino == null) {
+			return new DtoTransferResponse();
+		}
+		
+		origem.setSaldoConta(origem.getSaldoConta() - valor.doubleValue());
+		destino.setSaldoConta(destino.getSaldoConta() + valor.doubleValue());
+		
+		Transferencia transfOrigem = new Transferencia();
+		Transferencia transfDestino = new Transferencia();
+		
+		transfOrigem.setConta(origem);
+		transfOrigem.setMovimentacao(TipoMovimentacao.Saida);
+		transfOrigem.setTipoTrasacao(TipoTransacao.Ted);
+		transfOrigem.setValorTransacao(valor);
 				
-				
-				Transferencia transfOrigem = new Transferencia(valor, TipoTransacao.Pix);
-				transfOrigem.setConta(origem);
-				transfOrigem.setMovimentacao(TipoMovimentacao.Saida);
-				
-				Transferencia transfDestino = new Transferencia(valor, TipoTransacao.Pix);
-				transfDestino.setConta(destinoTransf);
-				transfDestino.setMovimentacao(TipoMovimentacao.Entrada);
-				
-				ExtratoMovimentacao extrato = new ExtratoMovimentacao(TipoTransacao.Pix, origem.getTitular().getCpf(), valor, origem, destinoTransf);
-				
-				destinoTransf.setSaldoConta(destino.getSaldoConta() + valor.doubleValue());
-				origem.setSaldoConta(origem.getSaldoConta().doubleValue() - valor.doubleValue());
-				
-				response.setTipoTrasacao(TipoTransacao.Pix);
-				response.setDestino(destinoTransf);
-				response.setOrigem(origem);
-				response.setValorTransacao(valor.doubleValue());
-				
-				repositoryExtrato.save(extrato);
-				repositoryConta.save(destinoTransf);
-				repositoryConta.save(origem);
-				repositoryTransf.save(transfOrigem);
-				repositoryTransf.save(transfDestino);
-				
-				
-				return response; 
-					
-			}else {				
-				return response;
-			}
-			
+		transfDestino.setConta(destino);
+		transfDestino.setMovimentacao(TipoMovimentacao.Entrada);
+		transfDestino.setTipoTrasacao(TipoTransacao.Ted);
+		transfDestino.setValorTransacao(valor);
+		
+		ExtratoMovimentacao extratoOrigem = new ExtratoMovimentacao(TipoTransacao.Ted, valor);
+		ExtratoMovimentacao extratoDestino = new ExtratoMovimentacao(TipoTransacao.Ted, valor);
+		
+		repositoryTransf.save(transfOrigem);
+		repositoryTransf.save(transfDestino);
+		repositoryExtrato.save(extratoOrigem);
+		repositoryExtrato.save(extratoDestino);
+		repositoryConta.save(origem);
+		repositoryConta.save(destino);
+		
+		DtoTransferResponse response = new DtoTransferResponse();
+		response.setDestino(destino);
+		response.setOrigem(origem);
+		response.setTipoTrasacao(TipoTransacao.Ted);
+		response.setValorTransacao(valor.doubleValue());
+		
+		return response;
 	}
 
 	@Override
-	public DtoTransferResponse transfeTed(Long id, Integer numConta, double valor) {
+	public void transfeSaque(double saldo, Long idConta) {
+		// TODO Auto-generated method stub
+		Conta conta = repositoryConta.findById(idConta).orElseThrow(() -> new RuntimeException(
+				"Conta nâo encontrada."));	
+		conta.setSaldoConta(conta.getSaldoConta() - saldo);
+		repositoryConta.save(conta);
+		
+	}
+
+	@Override
+	public void transfeDeposito(double deposito, Long idConta) {
 		// TODO Auto-generated method stub
 		
-		return null;
+		Conta conta = repositoryConta.findById(idConta).orElseThrow(() -> new RuntimeException(
+				"Conta nâo encontrada."));	
+		conta.setSaldoConta(conta.getSaldoConta() + deposito);
+		repositoryConta.save(conta);
+		
 	}
-
-	@Override
-	public void transfeDoc(Conta titular, Conta destino, double valor) {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public void transfeSaque(Conta conta, double saldo) {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public void transfeDeposito(Conta conta, double deposito) {
-		// TODO Auto-generated method stub
-	}
-
+	
 	@Override
 	public List<HistoricoTransferenciaDTO> getHistoricoTransf(String cpf) throws ValidacaoDadosPessoa {
 		// TODO Auto-generated method stub
-		
+
 		List<HistoricoTransferenciaDTO> histTrans = repositoryTransf.buscarHistoricoPorCpf(cpf);
-		
-		
+
 		return histTrans;
 	}
-	
+
 
 }

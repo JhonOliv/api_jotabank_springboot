@@ -39,6 +39,9 @@ public class ControllerConta {
 		if(request.getNomeCompleto().isBlank() || request.getCpf().isBlank()) {
 			GlobalExceptionHandler error = new GlobalExceptionHandler("Dados informados estão incorretos", "404");
 			return ResponseEntity.badRequest().body(error);
+		}else if (servContaCorrente.criarContaCorrente(request) == null) {
+			GlobalExceptionHandler error = new GlobalExceptionHandler("Conta jà existe, tente com outro cpf", "400");
+			return ResponseEntity.badRequest().body(error);
 		}
 		
 		servContaCorrente.criarContaCorrente(request); 
@@ -64,11 +67,12 @@ public class ControllerConta {
 	
 	public ResponseEntity<?> buscarContaById(@PathVariable("id") Long id) throws NumberFormatException, NegativeNumberException{
 		
-		if(id.toString().matches("^[\\\\p{L}\\\\s]+$\\r\\n") || id <= 0 ) {
+		if(servContaCorrente.getContaPorId(id) == null) {
 			
-			GlobalExceptionHandler error = new GlobalExceptionHandler("Error, valor igual a 0 ou é negativo!", "404");
+			GlobalExceptionHandler error = new GlobalExceptionHandler("Erro, conta não existe!", "404");
 			return ResponseEntity.badRequest().body(error);
 		}
+		
 		ContaDtoResponse conta = servContaCorrente.getContaPorId(id);
 		return ResponseEntity.status(HttpStatus.OK).body(conta);
 	}

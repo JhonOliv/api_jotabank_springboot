@@ -12,10 +12,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.jotabank.api.dtos.DtoSaqueRequest;
 import com.jotabank.api.dtos.DtoTransferRequest;
 import com.jotabank.api.dtos.DtoTransferResponse;
 import com.jotabank.api.exception.GlobalExceptionHandler;
 import com.jotabank.api.exception.ValidacaoDadosPessoa;
+import com.jotabank.api.exception.ValidacaoInsercaoTransferencia;
 import com.jotabank.api.services.TransferenciaFactoryService;
 
 
@@ -39,21 +41,29 @@ public class TransferenciaController {
 
 	}
 	
-	@GetMapping("/ted")
-	public ResponseEntity<?> transfTed(@RequestBody DtoTransferRequest request){
+	@PostMapping("/ted/{idConta}")
+	public ResponseEntity<?> transfTed(@RequestBody DtoTransferRequest request, @PathVariable Long idConta) throws ValidacaoInsercaoTransferencia{
 		LocalTime hora = LocalTime.now();
-		System.out.print(hora.getHour());
 		
-		return ResponseEntity.ok(hora);
+		if(hora.getHour() >= 10 && hora.getHour() < 18) {
+			
+			return ResponseEntity.ok().body(serviceTransf.transfeTed(idConta, request.getNumConta(), 
+					request.getCpf(), request.getValorTranferencia()));
+			
+		}else {
+			GlobalExceptionHandler error = new GlobalExceptionHandler("404", "Essa funcionalidade só funciona das 10hrs até as 18hrs.");
+			return ResponseEntity.badRequest().body(error);
+		}
+		
 	}
 	
-	@PostMapping("/doc")
-	public ResponseEntity<DtoTransferResponse> transfDoc(@RequestBody DtoTransferRequest request){
-		return null;
-	}
-	
-	@PostMapping("/saque")
-	public ResponseEntity<DtoTransferResponse> transfSaque(@RequestBody DtoTransferRequest request){
+	@PostMapping("/saque/{idConta}")
+	public ResponseEntity<DtoTransferResponse> transfSaque(@RequestBody DtoSaqueRequest request, @PathVariable Long idConta){
+		
+		
+		
+		serviceTransf.transfeSaque(request.getValor() , idConta);
+		
 		return null;
 	}
 	

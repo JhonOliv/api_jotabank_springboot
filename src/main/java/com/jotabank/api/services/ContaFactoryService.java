@@ -38,9 +38,11 @@ public class ContaFactoryService implements ContaService{
 			throw new ValidacaoDadosPessoa("Erro ao inserir os dados pessoais.");
 			
 		}else if(request.getSaldo() <= 0) {
-			throw new VerificarDadosConta("Saldo inserido é menor ou igual a 0");
+			throw new VerificarDadosConta("Saldo Insuficíente !!!");
+		}else if(repositoryConta.getConta(request.getCpf()) != null) {
+			return null;
 		}
-		
+			
 		Cliente titular = new Cliente(request.getNomeCompleto(), request.getCpf(),
 				request.getTelefone(), request.getEndereco(), request.getSalario());
 		Cliente clienteSalvo = repositoryCliente.save(titular);

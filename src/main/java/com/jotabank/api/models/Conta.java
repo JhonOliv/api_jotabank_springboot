@@ -1,5 +1,4 @@
 package com.jotabank.api.models;
-
 import com.jotabank.api.exception.VerificarDadosConta;
 
 import jakarta.persistence.Column;
@@ -14,6 +13,7 @@ import jakarta.persistence.Table;
 @Table(name="tab_Conta")
 public abstract class Conta {
 	
+	public Conta() {}
 	public Conta(Cliente pessoa, Double saldo, String password) throws VerificarDadosConta {
 		if(!pessoa.equals(null) && saldo.intValue() > 0) {
 			setTitular(pessoa);
@@ -24,9 +24,6 @@ public abstract class Conta {
 		}
 	}
 	
-	public Conta() {
-		
-	}
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,6 +36,7 @@ public abstract class Conta {
 	private Cliente titular;
 	@Column(length = 50, nullable = false)	
 	private Double saldoConta;
+	
 	
 	public Long getIdConta() {
 		return this.idConta;
@@ -71,5 +69,7 @@ public abstract class Conta {
 	public void setSaldoConta(Double saldo) {
 		this.saldoConta = saldo;
 	}
+	
+	
 	
 }
