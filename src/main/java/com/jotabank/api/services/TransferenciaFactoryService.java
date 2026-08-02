@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.jotabank.api.dtos.DadosContaRequestDto;
+import com.jotabank.api.dtos.DtoSaqueResponse;
 import com.jotabank.api.dtos.DtoTransferResponse;
 import com.jotabank.api.dtos.HistoricoTransferenciaDTO;
 import com.jotabank.api.exception.NegativeNumberException;
@@ -136,24 +137,53 @@ public class TransferenciaFactoryService implements TransferenciaService {
 	}
 
 	@Override
-	public void transfeSaque(double saldo, Long idConta) {
+	public DtoSaqueResponse transfeSaque(double valor, Long idConta) {
 		// TODO Auto-generated method stub
+		
 		Conta conta = repositoryConta.findById(idConta).orElseThrow(() -> new RuntimeException(
-				"Conta nâo encontrada."));	
-		conta.setSaldoConta(conta.getSaldoConta() - saldo);
-		repositoryConta.save(conta);
+				"Conta nâo encontrada."));
+		
+		if(conta.getSaldoConta() >= valor) {
+			conta.setSaldoConta(conta.getSaldoConta() - valor);			
+			repositoryConta.save(conta);
+			DtoSaqueResponse saque = new DtoSaqueResponse();
+			saque.setValor(conta.getSaldoConta());
+			saque.setMsg("Saque Realizado com sucesso.");
+			return saque;
+		}else {
+			
+			DtoSaqueResponse response = new DtoSaqueResponse();
+			response.setValor(0);
+			response.setMsg("Saque indisponível por falta de recursos financeiros.");
+			return response;
+		}
+		
+	  
 		
 	}
 
 	@Override
-	public void transfeDeposito(double deposito, Long idConta) {
+	public DtoSaqueResponse transfeDeposito(double deposito, Long idConta) {
 		// TODO Auto-generated method stub
-		
 		Conta conta = repositoryConta.findById(idConta).orElseThrow(() -> new RuntimeException(
-				"Conta nâo encontrada."));	
-		conta.setSaldoConta(conta.getSaldoConta() + deposito);
-		repositoryConta.save(conta);
+				"Conta nâo encontrada."));
 		
+		if(deposito > 0) {
+			conta.setSaldoConta(conta.getSaldoConta() + deposito);			
+			repositoryConta.save(conta);
+			
+			DtoSaqueResponse dep = new DtoSaqueResponse();
+			dep.setValor(conta.getSaldoConta());
+			dep.setMsg("Saque Realizado com sucesso.");
+			return dep;
+			
+		}else {
+			
+			DtoSaqueResponse response = new DtoSaqueResponse();
+			response.setValor(0);
+			response.setMsg("Saque indisponível por falta de recursos financeiros.");
+			return response;
+		}	
 	}
 	
 	@Override

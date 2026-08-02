@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jotabank.api.dtos.DtoSaqueRequest;
+import com.jotabank.api.dtos.DtoSaqueResponse;
 import com.jotabank.api.dtos.DtoTransferRequest;
 import com.jotabank.api.dtos.DtoTransferResponse;
 import com.jotabank.api.exception.GlobalExceptionHandler;
@@ -58,24 +59,36 @@ public class TransferenciaController {
 	}
 	
 	@PostMapping("/saque/{idConta}")
-	public ResponseEntity<DtoTransferResponse> transfSaque(@RequestBody DtoSaqueRequest request, @PathVariable Long idConta){
+	public ResponseEntity<?> transfSaque(@RequestBody DtoSaqueRequest request, @PathVariable Long idConta){
+			
+		DtoSaqueResponse response = serviceTransf.transfeSaque(request.getValor(), idConta);
+		if(response.getValor() == 0) {
+			GlobalExceptionHandler error = new GlobalExceptionHandler("404", response.getMsg());
+			return ResponseEntity.badRequest().body(error);
+		}
 		
-		
-		
-		serviceTransf.transfeSaque(request.getValor() , idConta);
-		
-		return null;
+		GlobalExceptionHandler success = new GlobalExceptionHandler("200", response.getMsg());
+		return ResponseEntity.ok(success);
+
 	}
 	
 	@PostMapping("/deposito")
-	public ResponseEntity<DtoTransferResponse> transfdeposito(@RequestBody DtoTransferRequest request){
-		return null;
+	public ResponseEntity<?> transfdeposito(@RequestBody DtoSaqueRequest request, @PathVariable Long idConta){
+		
+		DtoSaqueResponse response = serviceTransf.transfeSaque(request.getValor(), idConta);
+		if(response.getValor() == 0) {
+			GlobalExceptionHandler error = new GlobalExceptionHandler("404", response.getMsg());
+			return ResponseEntity.badRequest().body(error);
+		}
+		
+		GlobalExceptionHandler success = new GlobalExceptionHandler("200", response.getMsg());
+		return ResponseEntity.ok(success);
+
 	} 
 	
 	@GetMapping("/historico/{cpf}")
 	public ResponseEntity<?> getHistoricoTransferencia (@PathVariable("cpf") String cpf) throws ValidacaoDadosPessoa{
 		
-		System.out.print("Acessou a rota!");
 		return ResponseEntity.status(HttpStatus.FOUND).body(serviceTransf.getHistoricoTransf(cpf));
 		
 	}
