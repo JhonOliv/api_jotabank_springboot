@@ -3,7 +3,6 @@ package com.jotabank.api.services;
 import java.math.BigDecimal;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.jotabank.api.dtos.DadosContaRequestDto;
@@ -24,14 +23,14 @@ import com.jotabank.api.repositories.TransferenciaRepository;
 
 import jakarta.transaction.Transactional;
 import jakarta.validation.ValidationException;
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class TransferenciaFactoryService implements TransferenciaService {
-	@Autowired
+	
 	private TransferenciaRepository repositoryTransf;
-	@Autowired
 	private ContaRepository repositoryConta;
-	@Autowired
 	private ExtratoMovimentacaoRepository repositoryExtrato;
 
 	@Transactional
@@ -45,13 +44,14 @@ public class TransferenciaFactoryService implements TransferenciaService {
 				.orElseThrow(() -> new RuntimeException("Erros ao buscar dados da conta"));
 		DtoTransferResponse response = new DtoTransferResponse();
 
-		if (origem.getTitular().getCpf().equals(destinoTransf.getTitular().getCpf())) {
+		// Guard Clauses 
+		if (origem.getTitular().getCpf().equals(destinoTransf.getTitular().getCpf())) 
 			throw new ValidationException("Dados da Origem são as mesma de Destino");
-			
-		} else if (Double.toString(valor.doubleValue()).matches("\"/^\\\\d+$/\\r\\n\"")) {
+		if (Double.toString(valor.doubleValue()).matches("\"/^\\\\d+$/\\r\\n\"")) 
 			throw new NegativeNumberException(
-					"Informação inserida não é compatível com o esperado revise a sua solicitação!");
-		} else if (origem.getSaldoConta().doubleValue() >= valor.doubleValue()) {
+			"Informação inserida não é compatível com o esperado revise a sua solicitação!"); 
+		
+		if (origem.getSaldoConta().compareTo(valor.doubleValue()) >= 0) {
 
 			Transferencia transfOrigem = new Transferencia(valor, TipoTransacao.Pix);
 			transfOrigem.setConta(origem);
@@ -67,6 +67,10 @@ public class TransferenciaFactoryService implements TransferenciaService {
 			destinoTransf.setSaldoConta(destino.getSaldoConta() + valor.doubleValue());
 			origem.setSaldoConta(origem.getSaldoConta().doubleValue() - valor.doubleValue());
 
+			repositoryTransf.save(transfOrigem);
+			repositoryTransf.save(transfDestino);
+			
+			
 			response.setTipoTrasacao(TipoTransacao.Pix);
 			response.setDestino(destinoTransf);
 			response.setOrigem(origem);
@@ -74,8 +78,6 @@ public class TransferenciaFactoryService implements TransferenciaService {
 
 			repositoryExtrato.save(extratoOrigem);
 			repositoryExtrato.save(extratoDestino);
-			repositoryTransf.save(transfOrigem);
-			repositoryTransf.save(transfDestino);
 			repositoryConta.save(destinoTransf);
 			repositoryConta.save(origem);
 
@@ -158,8 +160,6 @@ public class TransferenciaFactoryService implements TransferenciaService {
 			return response;
 		}
 		
-	  
-		
 	}
 
 	@Override
@@ -189,10 +189,13 @@ public class TransferenciaFactoryService implements TransferenciaService {
 	@Override
 	public List<HistoricoTransferenciaDTO> getHistoricoTransf(String cpf) throws ValidacaoDadosPessoa {
 		// TODO Auto-generated method stub
-
-		List<HistoricoTransferenciaDTO> histTrans = repositoryTransf.buscarHistoricoPorCpf(cpf);
-
-		return histTrans;
+		if(!cpf.isEmpty()) {
+			
+			List<HistoricoTransferenciaDTO> histTrans = repositoryTransf.buscarHistoricoPorCpf(cpf);
+			return histTrans;
+		}
+		
+		return null;
 	}
 
 

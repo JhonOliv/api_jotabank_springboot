@@ -89,6 +89,11 @@ public class TransferenciaController {
 	@GetMapping("/historico/{cpf}")
 	public ResponseEntity<?> getHistoricoTransferencia (@PathVariable("cpf") String cpf) throws ValidacaoDadosPessoa{
 		
+		if(serviceTransf.getHistoricoTransf(cpf) == null) {
+			GlobalExceptionHandler error = new GlobalExceptionHandler("404", "Error ao buscar histórico tente novamente!");
+			return ResponseEntity.badRequest().body(error);
+		}
+		
 		return ResponseEntity.status(HttpStatus.FOUND).body(serviceTransf.getHistoricoTransf(cpf));
 		
 	}
