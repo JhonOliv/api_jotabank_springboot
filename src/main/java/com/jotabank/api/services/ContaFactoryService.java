@@ -3,7 +3,7 @@ package com.jotabank.api.services;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.jotabank.api.dtos.ContaDtoResponse;
@@ -18,13 +18,15 @@ import com.jotabank.api.repositories.ContaRepository;
 import com.jotabank.api.repositories.PessoaRepository;
 
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 
 @Service
+@RequiredArgsConstructor
 public class ContaFactoryService implements ContaService{
-	@Autowired
+	
 	private ContaRepository repositoryConta;
-	@Autowired
 	private PessoaRepository repositoryCliente;
+	private PasswordEncoder passwordEncoder;
 	
 	public String testHelloWorld(String nome) {
 		return "Hello World my dev " + nome;
@@ -47,7 +49,7 @@ public class ContaFactoryService implements ContaService{
 				request.getTelefone(), request.getEndereco(), request.getSalario());
 		Cliente clienteSalvo = repositoryCliente.save(titular);
 
-		ContaCorrente novaConta = new ContaCorrente(clienteSalvo, request.getSaldo(), request.getPassword());	
+		ContaCorrente novaConta = new ContaCorrente(clienteSalvo, request.getSaldo(), passwordEncoder.encode(request.getPassword())		);	
 		ContaCorrente contaCriada = repositoryConta.save(novaConta);
 		
 		return new ContaDtoRequest(clienteSalvo.getNome(), contaCriada.getSaldoConta());

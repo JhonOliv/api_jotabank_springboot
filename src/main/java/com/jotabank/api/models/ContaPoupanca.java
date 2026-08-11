@@ -1,5 +1,7 @@
 package com.jotabank.api.models;
 
+import java.util.Collection;
+
 import com.jotabank.api.exception.VerificarDadosConta;
 
 import jakarta.persistence.Entity;
@@ -15,6 +17,8 @@ public class ContaPoupanca extends Conta{
 	public ContaPoupanca() {
 		
 	}
+
+	
 
 
 }

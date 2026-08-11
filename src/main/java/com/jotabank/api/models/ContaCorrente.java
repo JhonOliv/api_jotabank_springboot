@@ -1,5 +1,9 @@
 package com.jotabank.api.models;
 
+import java.util.Collection;
+
+import org.springframework.security.core.GrantedAuthority;
+
 import com.jotabank.api.exception.VerificarDadosConta;
 import jakarta.persistence.Entity;
 
@@ -14,5 +18,7 @@ public class ContaCorrente extends Conta {
 	public ContaCorrente () {
 		
 	}
-	
+
+
+
 }

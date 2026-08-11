@@ -1,7 +1,6 @@
 package com.jotabank.api.controllers;
 
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -21,11 +20,15 @@ import com.jotabank.api.exception.ValidacaoDadosPessoa;
 import com.jotabank.api.exception.VerificarDadosConta;
 import com.jotabank.api.services.ContaFactoryService;
 
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+
 @RestController
 @RequestMapping("v1/api/conta")
+@RequiredArgsConstructor
 public class ControllerConta {
 
-	@Autowired
+	
 	private ContaFactoryService servContaCorrente;
 	
 	@GetMapping
@@ -33,8 +36,8 @@ public class ControllerConta {
 		return servContaCorrente.testHelloWorld("Jhonatan Silva");
 	}
 	
-	@PostMapping("/criarConta")
-	public ResponseEntity<?> criarConta(@RequestBody ContaDtoRequest request) throws ValidacaoDadosPessoa, VerificarDadosConta {
+	@PostMapping("/register")
+	public ResponseEntity<?> criarConta(@Valid @RequestBody ContaDtoRequest request) throws ValidacaoDadosPessoa, VerificarDadosConta {
 				
 		if(request.getNomeCompleto().isBlank() || request.getCpf().isBlank()) {
 			GlobalExceptionHandler error = new GlobalExceptionHandler("Dados informados estão incorretos", "404");

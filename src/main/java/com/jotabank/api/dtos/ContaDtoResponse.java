@@ -25,9 +25,7 @@ public class ContaDtoResponse {
 	@NotBlank
 	private int contaNumber;
 	
-	public ContaDtoResponse() {
-		
-	}
+	public ContaDtoResponse() {}
 	
 	public ContaDtoResponse(Conta conta) {
 		setNomeCompleto(conta.getTitular().getNome());
