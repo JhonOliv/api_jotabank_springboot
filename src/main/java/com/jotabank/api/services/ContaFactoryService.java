@@ -3,6 +3,7 @@ package com.jotabank.api.services;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -23,9 +24,11 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class ContaFactoryService implements ContaService{
-	
+	@Autowired
 	private ContaRepository repositoryConta;
+	@Autowired
 	private PessoaRepository repositoryCliente;
+	@Autowired
 	private PasswordEncoder passwordEncoder;
 	
 	public String testHelloWorld(String nome) {
@@ -36,20 +39,20 @@ public class ContaFactoryService implements ContaService{
 	@Override
 	public ContaDtoRequest criarContaCorrente(ContaDtoRequest request) throws ValidacaoDadosPessoa, VerificarDadosConta{
 		
-		if(request.getNomeCompleto().isBlank() && request.getCpf().isBlank()) {
+		if(request.getNomeCompleto().isBlank() && request.getCpf().isBlank())
 			throw new ValidacaoDadosPessoa("Erro ao inserir os dados pessoais.");
-			
-		}else if(request.getSaldo() <= 0) {
+		if(request.getSaldo() <= 0)
 			throw new VerificarDadosConta("Saldo Insuficíente !!!");
-		}else if(repositoryConta.getConta(request.getCpf()) != null) {
+		if(repositoryConta.getConta(request.getCpf()) != null) 
 			return null;
-		}
+		
 			
+		
 		Cliente titular = new Cliente(request.getNomeCompleto(), request.getCpf(),
 				request.getTelefone(), request.getEndereco(), request.getSalario());
 		Cliente clienteSalvo = repositoryCliente.save(titular);
 
-		ContaCorrente novaConta = new ContaCorrente(clienteSalvo, request.getSaldo(), passwordEncoder.encode(request.getPassword())		);	
+		ContaCorrente novaConta = new ContaCorrente(clienteSalvo, request.getSaldo(), passwordEncoder.encode(request.getPassword()));	
 		ContaCorrente contaCriada = repositoryConta.save(novaConta);
 		
 		return new ContaDtoRequest(clienteSalvo.getNome(), contaCriada.getSaldoConta());

@@ -42,10 +42,7 @@ public abstract class Conta implements UserDetails {
 	private Cliente titular;
 	@Column(length = 50, nullable = false)	
 	private Double saldoConta;
-	@Column(length = 50, nullable = false)
-	private String Role;
-	@Column
-	private boolean isAtive = false;
+	
 	
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {

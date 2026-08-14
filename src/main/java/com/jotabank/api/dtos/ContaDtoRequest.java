@@ -15,11 +15,8 @@ public class ContaDtoRequest {
 	private String telefone;
 	@Size(max = 70)
 	private String endereco;
-	@NotBlank
 	private Double salario;
-	@NotBlank
 	private Double saldo;
-	@Size(min = 4, max = 6)
 	private String password;
 	
 	public ContaDtoRequest() {

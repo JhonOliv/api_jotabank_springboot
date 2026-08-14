@@ -1,6 +1,7 @@
 package com.jotabank.api.controllers;
 
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -20,7 +21,6 @@ import com.jotabank.api.exception.ValidacaoDadosPessoa;
 import com.jotabank.api.exception.VerificarDadosConta;
 import com.jotabank.api.services.ContaFactoryService;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -28,7 +28,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ControllerConta {
 
-	
+	@Autowired
 	private ContaFactoryService servContaCorrente;
 	
 	@GetMapping
@@ -37,13 +37,10 @@ public class ControllerConta {
 	}
 	
 	@PostMapping("/register")
-	public ResponseEntity<?> criarConta(@Valid @RequestBody ContaDtoRequest request) throws ValidacaoDadosPessoa, VerificarDadosConta {
+	public ResponseEntity<?> criarConta(@RequestBody ContaDtoRequest request) throws ValidacaoDadosPessoa, VerificarDadosConta {
 				
 		if(request.getNomeCompleto().isBlank() || request.getCpf().isBlank()) {
 			GlobalExceptionHandler error = new GlobalExceptionHandler("Dados informados estão incorretos", "404");
-			return ResponseEntity.badRequest().body(error);
-		}else if (servContaCorrente.criarContaCorrente(request) == null) {
-			GlobalExceptionHandler error = new GlobalExceptionHandler("Conta jà existe, tente com outro cpf", "400");
 			return ResponseEntity.badRequest().body(error);
 		}
 		
@@ -51,7 +48,6 @@ public class ControllerConta {
 		GlobalExceptionHandler success = new GlobalExceptionHandler("Conta foi Criada com sucesso", "201");
 		
 		return ResponseEntity.status(HttpStatus.CREATED).body(success);
-
 	}
 	
 	@GetMapping("/todasContas")
