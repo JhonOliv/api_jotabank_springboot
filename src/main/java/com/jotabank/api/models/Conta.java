@@ -15,16 +15,18 @@ import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
+@SuppressWarnings("serial")
 @Entity
 @Table(name="tab_Conta")
 public abstract class Conta implements UserDetails {
 
 	public Conta() {}
-	public Conta(Cliente pessoa, Double saldo, String password) throws VerificarDadosConta {
+	public Conta(Cliente pessoa, Double saldo, Role role, String password ) throws VerificarDadosConta {
 		if(!pessoa.equals(null) && saldo.intValue() > 0) {
 			setTitular(pessoa);
 			setSaldoConta(saldo);
 			setPassword(password);
+			setRole(role);
 		}else {
 			throw new VerificarDadosConta("Erro ao criar conta, verifique se os dados estão corretos!");
 		}
@@ -42,7 +44,8 @@ public abstract class Conta implements UserDetails {
 	private Cliente titular;
 	@Column(length = 50, nullable = false)	
 	private Double saldoConta;
-	
+	@Column(length = 6, nullable = false)
+	private Role role; 
 	
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -50,6 +53,12 @@ public abstract class Conta implements UserDetails {
 		return null;
 	}
 
+	public Role getRole() {
+		return role;
+	}
+	public void setRole(Role role) {
+		this.role = role;
+	}
 	@Override
 	public String getUsername() {
 		return null;
@@ -74,7 +83,7 @@ public abstract class Conta implements UserDetails {
 		return true;
 	}
 	
-	
+	@Override
 	public boolean isEnabled() {
 		return true;
 	}

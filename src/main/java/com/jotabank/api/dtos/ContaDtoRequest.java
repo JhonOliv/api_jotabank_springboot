@@ -18,6 +18,7 @@ public class ContaDtoRequest {
 	private Double salario;
 	private Double saldo;
 	private String password;
+	private String Role;
 	
 	public ContaDtoRequest() {
 		
@@ -29,14 +30,25 @@ public class ContaDtoRequest {
 		setSaldo(saldoConta);
 	}
 	
-	public ContaDtoRequest (String nome, String cpf, String tel, String end, Double salario, Double saldo) {
+	public ContaDtoRequest (String nome, String cpf, String tel, String end, Double salario, Double saldo, String Role) {
 		setNomeCompleto(nome);
 		setCpf(cpf);
 		setTelefone(tel);
 		setEndereco(end);
 		setSalario(salario);
 		setSaldo(saldo);
+		setRole(Role);
 	}
+	
+	
+	public String getRole() {
+		return Role;
+	}
+
+	public void setRole(String role) {
+		Role = role;
+	}
+
 	public String getNomeCompleto() {
 		return nomeCompleto;
 	}
