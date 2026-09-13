@@ -59,7 +59,7 @@ public class TransferenciaController {
 	}
 	
 	@PostMapping("/saque/{idConta}")
-	public ResponseEntity<?> transfSaque(@RequestBody DtoSaqueRequest request, @PathVariable Long idConta){
+	public ResponseEntity<?> transfSaque(@RequestBody DtoSaqueRequest request, @PathVariable Long idConta) throws ValidacaoInsercaoTransferencia{
 			
 		DtoSaqueResponse response = serviceTransf.transfeSaque(request.getValor(), idConta);
 		if(response.getValor() == 0) {
@@ -73,7 +73,7 @@ public class TransferenciaController {
 	}
 	
 	@PostMapping("/deposito")
-	public ResponseEntity<?> transfdeposito(@RequestBody DtoSaqueRequest request, @PathVariable Long idConta){
+	public ResponseEntity<?> transfdeposito(@RequestBody DtoSaqueRequest request, @PathVariable Long idConta) throws ValidacaoInsercaoTransferencia{
 		
 		DtoSaqueResponse response = serviceTransf.transfeSaque(request.getValor(), idConta);
 		if(response.getValor() == 0) {
@@ -86,7 +86,7 @@ public class TransferenciaController {
 
 	} 
 	
-	@GetMapping("/historico/{cpf}")
+	@GetMapping("manager/historico/{cpf}")
 	public ResponseEntity<?> getHistoricoTransferencia (@PathVariable("cpf") String cpf) throws ValidacaoDadosPessoa{
 		
 		if(serviceTransf.getHistoricoTransf(cpf) == null) {

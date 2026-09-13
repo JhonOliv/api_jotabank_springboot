@@ -43,10 +43,6 @@ public class ExtratoMovimentacao {
 	private BigDecimal valor;
 	
 	
-	
-	
-	
-	
 	public void setTipoTransacao(TipoTransacao tipo) {
 		this.tipo = tipo;
 	}
@@ -57,10 +53,5 @@ public class ExtratoMovimentacao {
 	public void setValor(BigDecimal valor) {
 		this.valor = valor;
 	}
-
-
-
-	
-		
 
 }

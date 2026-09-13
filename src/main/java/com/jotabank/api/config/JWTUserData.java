@@ -7,7 +7,7 @@ import lombok.Setter;
 @RequiredArgsConstructor
 @Getter
 @Setter
-public record JWTUserData(Long id_Conta, String username) {
+public record JWTUserData(Long id_Conta, String username, String role) {
 	
 
 }

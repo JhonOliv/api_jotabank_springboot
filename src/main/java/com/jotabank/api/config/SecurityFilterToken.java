@@ -1,11 +1,13 @@
 package com.jotabank.api.config;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -16,36 +18,53 @@ import jakarta.servlet.http.HttpServletResponse;
 
 @Component
 public class SecurityFilterToken extends OncePerRequestFilter {
-
+	
 	@Autowired
-	private TokenConfig tokenConfig;
+    private final TokenConfig tokenConfig;
 
-	@Override
-	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-			throws ServletException, IOException {
-		// TODO Auto-generated method stub
+    public SecurityFilterToken(TokenConfig tokenConfig) {
+        this.tokenConfig = tokenConfig;
+    }
 
-		String authorizationHeader = request.getHeader("Authorization");
+    @Override
+    protected void doFilterInternal(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain filterChain)
+            throws ServletException, IOException {
 
-		if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+        String authorizationHeader =
+                request.getHeader("Authorization");
 
-			String token = authorizationHeader.substring(7);
+        if (authorizationHeader != null &&
+            authorizationHeader.startsWith("Bearer ")) {
 
-			Optional<JWTUserData> optUser = tokenConfig.validationToken(token);
+            String token = authorizationHeader.substring(7);
 
-			if (optUser.isPresent()) {
+            Optional<JWTUserData> optUser =
+                    tokenConfig.validationToken(token);
 
-				JWTUserData jwtUser = optUser.get();
+            if (optUser.isPresent()) {
 
-				UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(jwtUser,
-						null, null);
+                JWTUserData jwtUser = optUser.get();
 
-				SecurityContextHolder.getContext().setAuthentication(authentication);
-			}
-		}
+                GrantedAuthority authority =
+                        new SimpleGrantedAuthority(
+                                "ROLE_" + jwtUser.role());
 
-		filterChain.doFilter(request, response);
+                UsernamePasswordAuthenticationToken authentication =
+                        new UsernamePasswordAuthenticationToken(
+                                jwtUser,
+                                null,
+                                List.of(authority)
+                        );
 
-	}
+                SecurityContextHolder
+                        .getContext()
+                        .setAuthentication(authentication);
+            }
+        }
 
+        filterChain.doFilter(request, response);
+    }
 }

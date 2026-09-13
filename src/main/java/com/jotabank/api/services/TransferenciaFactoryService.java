@@ -3,6 +3,7 @@ package com.jotabank.api.services;
 import java.math.BigDecimal;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.jotabank.api.dtos.DadosContaRequestDto;
@@ -23,14 +24,14 @@ import com.jotabank.api.repositories.TransferenciaRepository;
 
 import jakarta.transaction.Transactional;
 import jakarta.validation.ValidationException;
-import lombok.RequiredArgsConstructor;
 
 @Service
-@RequiredArgsConstructor
 public class TransferenciaFactoryService implements TransferenciaService {
-	
+	@Autowired
 	private TransferenciaRepository repositoryTransf;
+	@Autowired
 	private ContaRepository repositoryConta;
+	@Autowired
 	private ExtratoMovimentacaoRepository repositoryExtrato;
 
 	@Transactional
@@ -38,7 +39,6 @@ public class TransferenciaFactoryService implements TransferenciaService {
 	public DtoTransferResponse transfePix(Long id, String cpf, BigDecimal valor) throws Exception {
 		// TODO Auto-generated method stub
 		Conta origem = repositoryConta.findById(id).orElseThrow(() -> new RuntimeException("Usuário não encontardo."));
-
 		DadosContaRequestDto destino = repositoryConta.getConta(cpf);
 		Conta destinoTransf = repositoryConta.findById(destino.getIdConta())
 				.orElseThrow(() -> new RuntimeException("Erros ao buscar dados da conta"));
@@ -69,17 +69,20 @@ public class TransferenciaFactoryService implements TransferenciaService {
 
 			repositoryTransf.save(transfOrigem);
 			repositoryTransf.save(transfDestino);
+			repositoryExtrato.save(extratoOrigem);
+			repositoryExtrato.save(extratoDestino);
+
+			origem.setExtrato(extratoOrigem);
+			destinoTransf.setExtrato(extratoDestino);
 			
+			repositoryConta.save(destinoTransf);
+			repositoryConta.save(origem);
 			
 			response.setTipoTrasacao(TipoTransacao.Pix);
 			response.setDestino(destinoTransf);
 			response.setOrigem(origem);
 			response.setValorTransacao(valor.doubleValue());
 
-			repositoryExtrato.save(extratoOrigem);
-			repositoryExtrato.save(extratoDestino);
-			repositoryConta.save(destinoTransf);
-			repositoryConta.save(origem);
 
 			return response;
 
@@ -88,26 +91,25 @@ public class TransferenciaFactoryService implements TransferenciaService {
 		}
 
 	}
-
 	@Transactional
 	@Override
 	public DtoTransferResponse transfeTed(Long id, int numConta, String cpf, BigDecimal valor) throws ValidacaoInsercaoTransferencia {
 		
+		DtoTransferResponse response = new DtoTransferResponse();
 		Conta origem = repositoryConta.findById(id).orElseThrow(() -> new RuntimeException("Erro ao buscar Conta"));
-		DadosContaRequestDto destinoRef = repositoryConta.getConta(cpf);
+		DadosContaRequestDto destinoRef = repositoryConta.getConta(cpf);		
+		Transferencia transfOrigem = new Transferencia();
+		Transferencia transfDestino = new Transferencia();
 		
 		Conta destino = repositoryConta.findById(destinoRef.getIdConta()).orElseThrow(() ->
 		new RuntimeException("Conta de destino não encontrada!"));
 		
-		if(origem == null || destino == null) {
-			return new DtoTransferResponse();
-		}
-		
+		if(origem == null || destino == null) return null;		
+		if(destino.getNumConta() != numConta) return null; 
+			
 		origem.setSaldoConta(origem.getSaldoConta() - valor.doubleValue());
 		destino.setSaldoConta(destino.getSaldoConta() + valor.doubleValue());
 		
-		Transferencia transfOrigem = new Transferencia();
-		Transferencia transfDestino = new Transferencia();
 		
 		transfOrigem.setConta(origem);
 		transfOrigem.setMovimentacao(TipoMovimentacao.Saida);
@@ -126,10 +128,13 @@ public class TransferenciaFactoryService implements TransferenciaService {
 		repositoryTransf.save(transfDestino);
 		repositoryExtrato.save(extratoOrigem);
 		repositoryExtrato.save(extratoDestino);
+		
+		origem.setExtrato(extratoOrigem);
+		destino.setExtrato(extratoDestino);
+		
 		repositoryConta.save(origem);
 		repositoryConta.save(destino);
 		
-		DtoTransferResponse response = new DtoTransferResponse();
 		response.setDestino(destino);
 		response.setOrigem(origem);
 		response.setTipoTrasacao(TipoTransacao.Ted);
@@ -137,17 +142,20 @@ public class TransferenciaFactoryService implements TransferenciaService {
 		
 		return response;
 	}
-
+	@Transactional
 	@Override
-	public DtoSaqueResponse transfeSaque(double valor, Long idConta) {
+	public DtoSaqueResponse transfeSaque(BigDecimal valor, Long idConta) throws ValidacaoInsercaoTransferencia {
 		// TODO Auto-generated method stub
-		
 		Conta conta = repositoryConta.findById(idConta).orElseThrow(() -> new RuntimeException(
 				"Conta nâo encontrada."));
 		
-		if(conta.getSaldoConta() >= valor) {
-			conta.setSaldoConta(conta.getSaldoConta() - valor);			
+		if(conta.getSaldoConta() >= valor.doubleValue()) {
+			ExtratoMovimentacao extra = new ExtratoMovimentacao(TipoTransacao.Saque, valor);
+			conta.setSaldoConta(conta.getSaldoConta() - valor.doubleValue());			
+			conta.setExtrato(extra);
+			
 			repositoryConta.save(conta);
+			
 			DtoSaqueResponse saque = new DtoSaqueResponse();
 			saque.setValor(conta.getSaldoConta());
 			saque.setMsg("Saque Realizado com sucesso.");
@@ -161,7 +169,7 @@ public class TransferenciaFactoryService implements TransferenciaService {
 		}
 		
 	}
-
+	@Transactional
 	@Override
 	public DtoSaqueResponse transfeDeposito(double deposito, Long idConta) {
 		// TODO Auto-generated method stub
@@ -185,7 +193,7 @@ public class TransferenciaFactoryService implements TransferenciaService {
 			return response;
 		}	
 	}
-	
+	@Transactional
 	@Override
 	public List<HistoricoTransferenciaDTO> getHistoricoTransf(String cpf) throws ValidacaoDadosPessoa {
 		// TODO Auto-generated method stub

@@ -4,6 +4,7 @@ package com.jotabank.api.controllers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -50,7 +51,8 @@ public class ControllerConta {
 		return ResponseEntity.status(HttpStatus.CREATED).body(success);
 	}
 	
-	@GetMapping("/todasContas")
+	@PreAuthorize("hasRole('ADMIN')")
+	@GetMapping("admin/todasContas")
 	public ResponseEntity<?> getTodasContas(){
 		
 		if(servContaCorrente.getAllConta().isEmpty()) {
@@ -63,7 +65,6 @@ public class ControllerConta {
 	}
 	
 	@GetMapping("/buscarConta/{id}")
-	
 	public ResponseEntity<?> buscarContaById(@PathVariable("id") Long id) throws NumberFormatException, NegativeNumberException{
 		
 		if(servContaCorrente.getContaPorId(id) == null) {
@@ -84,7 +85,7 @@ public class ControllerConta {
 		
 	}
 	
-	@DeleteMapping("/deletarConta/{id}")
+	@DeleteMapping("/admin/deletarConta/{id}")
 	public ResponseEntity<?> deletarContaById(@PathVariable("id") Long id){
 		System.out.print(id.toString().matches("^\\d+$\r\n"));
 		

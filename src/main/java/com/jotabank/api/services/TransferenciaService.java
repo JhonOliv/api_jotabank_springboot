@@ -14,7 +14,7 @@ public interface TransferenciaService {
 	
 	public DtoTransferResponse transfePix(Long id, String cpf, BigDecimal valor) throws Exception;
 	public DtoTransferResponse transfeTed(Long id, int numConta, String cpf, BigDecimal valor) throws ValidacaoInsercaoTransferencia;
-	public DtoSaqueResponse transfeSaque(double saldo, Long idConta );
+	public DtoSaqueResponse transfeSaque(BigDecimal saldo, Long idConta ) throws ValidacaoInsercaoTransferencia;
 	public DtoSaqueResponse transfeDeposito(double deposito, Long idConta);
 	public List<HistoricoTransferenciaDTO> getHistoricoTransf(String cpf) throws ValidacaoDadosPessoa;
 }

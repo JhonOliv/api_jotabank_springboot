@@ -54,12 +54,12 @@ public class ContaFactoryService implements ContaService {
 				request.getEndereco(), request.getSalario());
 		Cliente clienteSalvo = repositoryCliente.save(titular);
 
-		if (request.getRole().toUpperCase().equals(Role.USER)) {
+		if (request.getRole().toUpperCase().equals(Role.USER.toString())) {
 			novaConta = new ContaCorrente(clienteSalvo, request.getSaldo(),
 					passwordEncoder.encode(request.getPassword()), Role.USER);
 			contaSalva = repositoryConta.save(novaConta);
 		}
-		if (request.getRole().toUpperCase().equals(Role.ADMIN)) {
+		if (request.getRole().toUpperCase().equals(Role.ADMIN.toString())) {
 
 			novaConta = new ContaCorrente(clienteSalvo, request.getSaldo(),
 					passwordEncoder.encode(request.getPassword()), Role.ADMIN);
@@ -67,7 +67,7 @@ public class ContaFactoryService implements ContaService {
 			contaSalva = repositoryConta.save(novaConta);
 
 		}
-		if (request.getRole().toUpperCase().equals(Role.MANAGER)) {
+		if (request.getRole().toUpperCase().equals(Role.MANAGER.toString())) {
 
 			novaConta = new ContaCorrente(clienteSalvo, request.getSaldo(),
 					passwordEncoder.encode(request.getPassword()), Role.MANAGER);

@@ -1,18 +1,23 @@
 package com.jotabank.api.models;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.jotabank.api.exception.VerificarDadosConta;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @SuppressWarnings("serial")
@@ -44,17 +49,20 @@ public abstract class Conta implements UserDetails {
 	private Cliente titular;
 	@Column(length = 50, nullable = false)	
 	private Double saldoConta;
+	@Enumerated(EnumType.STRING)
 	@Column(length = 6, nullable = false)
 	private Role role; 
+	@OneToMany
+	private List<ExtratoMovimentacao> extrato;
+	
 	
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		// TODO Auto-generated method stub
-		return null;
+		return List.of(new SimpleGrantedAuthority("ROLE_" + this.role.name()));
 	}
 
 	public Role getRole() {
-		return role;
+		return this.role;
 	}
 	public void setRole(Role role) {
 		this.role = role;
@@ -114,6 +122,12 @@ public abstract class Conta implements UserDetails {
 	
 	public void setSaldoConta(Double saldo) {
 		this.saldoConta = saldo;
+	}
+	public List<ExtratoMovimentacao> getExtrato() {
+		return extrato;
+	}
+	public void setExtrato(ExtratoMovimentacao extrato) {
+		this.extrato.add(extrato);
 	}
 	
 	

@@ -20,6 +20,7 @@ public class TokenConfig {
 		Algorithm algorithm = Algorithm.HMAC256(secret);
 		
 		return JWT.create().withClaim("conta_id", conta.getIdConta())
+				.withClaim("Role", conta.getRole().name())
 				.withSubject(conta.getTitular().getCpf())
 				.withExpiresAt(Instant.now().plusSeconds(5000))
 				.withIssuedAt(Instant.now()).sign(algorithm);
@@ -34,8 +35,9 @@ public class TokenConfig {
 			DecodedJWT decode = JWT.require(algoritmo).build().verify(token);
 			
 			Long idConta = decode.getClaim("id_Conta").asLong();
+			String role = decode.getClaim("Role").asString();
 			String username = decode.getSubject();
-			return Optional.of(new JWTUserData(idConta, username));
+			return Optional.of(new JWTUserData(idConta, username, role));
 			
 			
 		} catch (JWTVerificationException e) {

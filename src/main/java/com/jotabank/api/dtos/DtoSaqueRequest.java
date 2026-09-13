@@ -1,14 +1,16 @@
 package com.jotabank.api.dtos;
 
+import java.math.BigDecimal;
+
 public class DtoSaqueRequest {
 	
-	private Double valor;
+	private  BigDecimal valor;
 	
-	public Double getValor() {
+	public BigDecimal getValor() {
 		return valor;
 	}
 	
-	public void setValor(Double valor) {
+	public void setValor(BigDecimal valor) {
 		this.valor = valor;
 	}
 

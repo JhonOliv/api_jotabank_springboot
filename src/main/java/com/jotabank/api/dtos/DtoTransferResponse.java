@@ -10,34 +10,29 @@ public class DtoTransferResponse {
 	private final String dataTransacao = String.valueOf(LocalDate.now());
 	private double valorTranferencia;
 	private TipoTransacao tipoTransferencia;
-	private ContaDtoResponse destino;
-	private ContaDtoResponse origem;
+	private TransferDtoResponse origem;
+	private TransferDtoResponse destino;
 	
-	
-	
-	public ContaDtoResponse getOrigem() {
+	public TransferDtoResponse getOrigem() {
 		return this.origem;
 	}
 
 	public void setOrigem(Conta origem) {
-		ContaDtoResponse dtoRequest = new ContaDtoResponse();
-		dtoRequest.setNomeCompleto(origem.getTitular().getNome());
-		dtoRequest.setSaldo(origem.getSaldoConta().doubleValue());
-		dtoRequest.setContaNumber(origem.getNumConta());
-
-		this.origem = dtoRequest;
+		
+		this.origem = new TransferDtoResponse(
+				origem.getNumConta(), origem.getTitular().getNome(),
+				origem.getTitular().getCpf());
+		
 	}
 
-	public ContaDtoResponse getDestino() {
+	public TransferDtoResponse getDestino() {
 		return destino;
 	}
 
 	public void setDestino(Conta destino) {
-		ContaDtoResponse dtoRequest = new ContaDtoResponse();
-		dtoRequest.setNomeCompleto(destino.getTitular().getNome());
-		dtoRequest.setSaldo(destino.getSaldoConta().doubleValue());
-		dtoRequest.setContaNumber(destino.getNumConta());
-		this.destino = dtoRequest;
+		this.destino = new TransferDtoResponse(
+				destino.getNumConta(), destino.getTitular().getNome(),
+				destino.getTitular().getCpf());
 	}
 
 	public String getDataTransacao() {

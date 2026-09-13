@@ -14,6 +14,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import com.jotabank.api.models.Role;
 import jakarta.servlet.DispatcherType;
 
 @Configuration
@@ -26,12 +27,17 @@ public class SecurityConfiguration {
 	@Bean
 	public SecurityFilterChain 	securityFilterChain(HttpSecurity http) throws Exception {
 		return http.csrf(csrf -> csrf.disable())
+				.headers(headers -> headers.frameOptions(
+						frame -> frame.disable()))
 				.cors(cors -> cors.configure(http))
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.authorizeHttpRequests(autorize -> autorize.dispatcherTypeMatchers(DispatcherType.ERROR).permitAll()
 				.requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
 				.requestMatchers(HttpMethod.POST, "v1/api/conta/register").permitAll()
 				.requestMatchers(HttpMethod.GET, "auth/teste").permitAll()
+				.requestMatchers("/h2-console/**").permitAll()
+				.requestMatchers("/admin/**").hasRole(Role.ADMIN.toString())
+				.requestMatchers("/manager/**").hasRole(Role.MANAGER.toString())
 				.anyRequest().authenticated())
 				.addFilterBefore(secFilter, UsernamePasswordAuthenticationFilter.class).build();
 				

@@ -36,6 +36,7 @@ public class Transferencia {
 	private final String dataTransacao = String.valueOf(LocalDate.now());
 	@Column(nullable = false)
 	private BigDecimal valorTranferencia;
+	@Enumerated(EnumType.STRING)
 	@Column(length = 15, nullable = false)
 	private TipoTransacao tipoTransferencia;
 	@Enumerated(EnumType.STRING)
